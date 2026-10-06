@@ -1,0 +1,34 @@
+import {test,expect} from "@playwright/test";
+import {readFile} from "node:fs/promises";
+
+test("cliente de cotización permite buscar, seleccionar con teclado y limpiar",async({page})=>{
+ const credentials=JSON.parse(await readFile(".runtime/e2e-credentials.json","utf8"));
+ await page.goto("/login");
+ await page.getByLabel("Correo electrónico",{exact:true}).fill(credentials.email);
+ await page.getByLabel("Contraseña",{exact:true}).fill(credentials.password);
+ await page.getByRole("button",{name:"Iniciar sesión",exact:true}).click();
+ await expect(page).toHaveURL(/dashboard/);
+ await page.goto("/clientes");
+ const name=`Cliente combo ${Date.now()}`;
+ const form=page.locator("#nuevo-cliente form");
+ await form.getByLabel("Nombre *",{exact:true}).fill(name);
+ await form.getByRole("button",{name:"Guardar cliente",exact:true}).click();
+ await expect(form.getByRole("status")).toHaveText("Guardado correctamente.");
+ await page.goto("/cotizaciones/nueva");
+ const customer=page.getByRole("combobox",{name:"Cliente",exact:true});
+ await customer.fill("zzclienteinexistentezz");
+ await expect(page.getByText("No encontramos clientes.",{exact:true})).toBeVisible();
+ await customer.fill(name);
+ await expect(page.getByRole("option",{name,exact:true})).toBeVisible();
+ await customer.press("ArrowDown");
+ await customer.press("Enter");
+ await expect(customer).toHaveValue(name);
+ await expect(page).toHaveURL(/cotizaciones\/nueva$/);
+ await page.getByRole("button",{name:"Limpiar selección",exact:true}).click();
+ await expect(customer).toHaveValue("");
+ await page.setViewportSize({width:360,height:800});
+ await customer.fill(name);
+ await expect(page.getByRole("option",{name,exact:true})).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.screenshot({path:".runtime/quote-customer-mobile.png"});
+});
