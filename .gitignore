@@ -1,0 +1,15 @@
+node_modules/
+.next/
+.env*
+!.env.example
+*.tsbuildinfo
+playwright-report/
+test-results/
+.runtime/
+
+.next-e2e/
+
+# Local previews, generated documents and visual test captures.
+output/
+tmp/
+docs/screenshots/

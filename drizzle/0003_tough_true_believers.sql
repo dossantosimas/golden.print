@@ -1,0 +1,2 @@
+ALTER TABLE "order" ADD COLUMN "closed_at" timestamp with time zone;--> statement-breakpoint
+ALTER TABLE "order" ADD CONSTRAINT "order_closed_ck" CHECK ("order"."closed_at" is null or ("order"."status" = 'delivered' and "order"."delivered_at" is not null));

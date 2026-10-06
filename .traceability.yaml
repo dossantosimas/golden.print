@@ -1,0 +1,593 @@
+# Blueprint authored by scribe; implementation evidence added by the orchestrator, 2026-10-03.
+version: 1
+feature: golden-print-3d-app
+spec_source: docs/REQUIREMENTS.md
+spec_version: '0.2'
+status: IMPLEMENTED_UNDER_VALIDATION
+links:
+  - req: REQ-001
+    title: "Autenticación"
+    source: "§1"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-AUTH-001
+        parent: REQ-001
+        scenarios: [SC-AC-AUTH-001-HP-001]
+        tests: ["tests/access.integration.test.ts","tests/e2e/workflow.spec.ts"]
+        impl: ["src/lib/access.ts","src/lib/auth.ts","src/lib/users.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-002
+    title: "Usuarios del negocio"
+    source: "respuesta: acceso"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-ACCESS-002
+        parent: REQ-002
+        scenarios: [SC-AC-ACCESS-002-HP-001]
+        tests: ["tests/access.integration.test.ts","tests/e2e/workflow.spec.ts"]
+        impl: ["src/lib/access.ts","src/lib/auth.ts","src/lib/users.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-003
+    title: "Permisos mínimos"
+    source: "respuesta: acceso; propuesta"
+    priority: HIGH
+    relation: contains
+    acs:
+      - id: AC-ROLE-003
+        parent: REQ-003
+        scenarios: [SC-AC-ROLE-003-HP-001]
+        tests: ["tests/access.integration.test.ts","tests/e2e/workflow.spec.ts"]
+        impl: ["src/lib/access.ts","src/lib/auth.ts","src/lib/users.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-004
+    title: "Resumen administrativo"
+    source: "§2"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-DASH-004
+        parent: REQ-004
+        scenarios: [SC-AC-DASH-004-HP-001]
+        tests: ["tests/reporting.integration.test.ts","tests/finance.test.ts"]
+        impl: ["src/lib/reporting.ts","src/lib/dates.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-005
+    title: "Datos y vistas de pedidos"
+    source: "§3"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-ORDER-005
+        parent: REQ-005
+        scenarios: [SC-AC-ORDER-005-HP-001]
+        tests: ["tests/db.integration.test.ts","tests/e2e/workflow.spec.ts"]
+        impl: ["src/lib/production-service.ts","src/lib/quote-service.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-006
+    title: "Operación de pedidos"
+    source: "§3"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-ORDER-006
+        parent: REQ-006
+        scenarios: [SC-AC-ORDER-006-HP-001]
+        tests: ["tests/db.integration.test.ts","tests/e2e/workflow.spec.ts"]
+        impl: ["src/lib/production-service.ts","src/lib/quote-service.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-007
+    title: "Estados independientes"
+    source: "§3; respuesta: abonos/fallos"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-STATE-007
+        parent: REQ-007
+        scenarios: [SC-AC-STATE-007-HP-001]
+        tests: ["tests/db.integration.test.ts","tests/e2e/workflow.spec.ts"]
+        impl: ["src/lib/production-service.ts","src/lib/quote-service.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-008
+    title: "Datos de clientes"
+    source: "§4"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-CUSTOMER-008
+        parent: REQ-008
+        scenarios: [SC-AC-CUSTOMER-008-HP-001]
+        tests: ["tests/e2e/workflow.spec.ts"]
+        impl: ["src/lib/catalog-service.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-009
+    title: "Historial e indicadores"
+    source: "§4"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-CUSTOMER-009
+        parent: REQ-009
+        scenarios: [SC-AC-CUSTOMER-009-HP-001]
+        tests: ["tests/reporting.integration.test.ts","tests/finance.test.ts"]
+        impl: ["src/lib/reporting.ts","src/lib/dates.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-010
+    title: "Métricas financieras"
+    source: "§5, §17"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-FINANCE-010
+        parent: REQ-010
+        scenarios: [SC-AC-FINANCE-010-HP-001]
+        tests: ["tests/reporting.integration.test.ts","tests/finance.test.ts"]
+        impl: ["src/lib/reporting.ts","src/lib/dates.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-011
+    title: "Filtros de fechas"
+    source: "§5, §6; respuesta: moneda"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-PERIOD-011
+        parent: REQ-011
+        scenarios: [SC-AC-PERIOD-011-HP-001]
+        tests: ["tests/reporting.integration.test.ts","tests/finance.test.ts"]
+        impl: ["src/lib/reporting.ts","src/lib/dates.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-012
+    title: "Evolución, caja y equilibrio"
+    source: "§5"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-FINANCE-012
+        parent: REQ-012
+        scenarios: [SC-AC-FINANCE-012-HP-001]
+        tests: ["tests/reporting.integration.test.ts","tests/finance.test.ts"]
+        impl: ["src/lib/reporting.ts","src/lib/dates.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-013
+    title: "Pérdidas y reimpresión"
+    source: "§5; respuesta: costos/fallos"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-LOSS-013
+        parent: REQ-013
+        scenarios: [SC-AC-LOSS-013-HP-001]
+        tests: ["tests/db.integration.test.ts","tests/e2e/workflow.spec.ts"]
+        impl: ["src/lib/production-service.ts","src/lib/quote-service.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-014
+    title: "Gestión de gastos"
+    source: "§6"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-EXPENSE-014
+        parent: REQ-014
+        scenarios: [SC-AC-EXPENSE-014-HP-001]
+        tests: ["tests/db.integration.test.ts","tests/e2e/workflow.spec.ts"]
+        impl: ["src/lib/production-service.ts","src/lib/quote-service.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-015
+    title: "Análisis de egresos"
+    source: "§6"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-EXPENSE-015
+        parent: REQ-015
+        scenarios: [SC-AC-EXPENSE-015-HP-001]
+        tests: ["tests/db.integration.test.ts","tests/e2e/workflow.spec.ts"]
+        impl: ["src/lib/production-service.ts","src/lib/quote-service.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-016
+    title: "Catálogo y costo por gramo"
+    source: "§7"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-FILAMENT-016
+        parent: REQ-016
+        scenarios: [SC-AC-FILAMENT-016-HP-001]
+        tests: ["tests/e2e/workflow.spec.ts"]
+        impl: ["src/lib/catalog-service.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-017
+    title: "Proyecto y materiales"
+    source: "§8"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-QUOTE-017
+        parent: REQ-017
+        scenarios: [SC-AC-QUOTE-017-HP-001]
+        tests: ["tests/quotes.integration.test.ts","tests/e2e/workflow.spec.ts"]
+        impl: ["src/lib/quote-service.ts","src/lib/quote-pdf.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-018
+    title: "Duración y energía"
+    source: "§8, §9; fórmula del usuario"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-TIME-018
+        parent: REQ-018
+        scenarios: [SC-AC-TIME-018-HP-001]
+        tests: ["tests/finance.test.ts"]
+        impl: ["src/lib/finance.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-019
+    title: "Máquina y contingencia"
+    source: "§8, §9; fórmula del usuario"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-MACHINE-019
+        parent: REQ-019
+        scenarios: [SC-AC-MACHINE-019-HP-001]
+        tests: ["tests/finance.test.ts"]
+        impl: ["src/lib/finance.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-020
+    title: "Costo de cotización"
+    source: "§9; fórmula del usuario"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-COST-020
+        parent: REQ-020
+        scenarios: [SC-AC-COST-020-HP-001]
+        tests: ["tests/finance.test.ts"]
+        impl: ["src/lib/finance.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-021
+    title: "Postprocesado flexible"
+    source: "§8, §9; respuesta final: PP al costo antes de multiplicadores"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-POST-021
+        parent: REQ-021
+        scenarios: [SC-AC-POST-021-HP-001]
+        tests: ["tests/finance.test.ts"]
+        impl: ["src/lib/finance.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-022
+    title: "Tres niveles configurables"
+    source: "§10; fórmula del usuario"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-PRICE-022
+        parent: REQ-022
+        scenarios: [SC-AC-PRICE-022-HP-001]
+        tests: ["tests/finance.test.ts"]
+        impl: ["src/lib/finance.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-023
+    title: "Ciclo de cotizaciones"
+    source: "§11"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-QUOTE-023
+        parent: REQ-023
+        scenarios: [SC-AC-QUOTE-023-HP-001]
+        tests: ["tests/quotes.integration.test.ts","tests/e2e/workflow.spec.ts"]
+        impl: ["src/lib/quote-service.ts","src/lib/quote-pdf.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-024
+    title: "Identificadores y conversión"
+    source: "§11, §13"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-ID-024
+        parent: REQ-024
+        scenarios: [SC-AC-ID-024-HP-001]
+        tests: ["tests/quotes.integration.test.ts","tests/e2e/workflow.spec.ts"]
+        impl: ["src/lib/quote-service.ts","src/lib/quote-pdf.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-025
+    title: "Documento del cliente"
+    source: "§12"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-PDF-025
+        parent: REQ-025
+        scenarios: [SC-AC-PDF-025-HP-001]
+        tests: ["tests/quotes.integration.test.ts","tests/e2e/workflow.spec.ts"]
+        impl: ["src/lib/quote-service.ts","src/lib/quote-pdf.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-026
+    title: "Anticipos y abonos"
+    source: "§3, §5, §13; respuesta: pagos"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-PAYMENT-026
+        parent: REQ-026
+        scenarios: [SC-AC-PAYMENT-026-HP-001]
+        tests: ["tests/db.integration.test.ts","tests/e2e/workflow.spec.ts"]
+        impl: ["src/lib/production-service.ts","src/lib/quote-service.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-027
+    title: "Costos reales"
+    source: "respuesta: costos reales/fallos; §3, §5"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-REAL-027
+        parent: REQ-027
+        scenarios: [SC-AC-REAL-027-HP-001]
+        tests: ["tests/db.integration.test.ts","tests/e2e/workflow.spec.ts"]
+        impl: ["src/lib/production-service.ts","src/lib/quote-service.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-028
+    title: "Moneda y configuración"
+    source: "respuesta: moneda/fórmula"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-LOCAL-028
+        parent: REQ-028
+        scenarios: [SC-AC-LOCAL-028-HP-001]
+        tests: ["tests/finance.test.ts"]
+        impl: ["src/lib/finance.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-029
+    title: "Flujos administrativos"
+    source: "§14"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-UX-029
+        parent: REQ-029
+        scenarios: [SC-AC-UX-029-HP-001]
+        tests: ["tests/e2e/workflow.spec.ts"]
+        impl: ["src/app/globals.css","src/components/entity-detail.tsx"]
+        verdict: NOT_TESTED
+  - req: REQ-030
+    title: "Integridad del negocio"
+    source: "§16"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-DATA-030
+        parent: REQ-030
+        scenarios: [SC-AC-DATA-030-HP-001]
+        tests: ["tests/db.integration.test.ts","tests/e2e/workflow.spec.ts"]
+        impl: ["src/lib/production-service.ts","src/lib/quote-service.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-031
+    title: "Fórmulas y auditoría"
+    source: "§17, §18"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-CALC-031
+        parent: REQ-031
+        scenarios: [SC-AC-CALC-031-HP-001]
+        tests: ["tests/finance.test.ts"]
+        impl: ["src/lib/finance.ts"]
+        verdict: NOT_TESTED
+  - req: REQ-032
+    title: "Conservar visión y etapas"
+    source: "§19"
+    priority: HIGH
+    relation: contains
+    acs:
+      - id: AC-ROADMAP-032
+        parent: REQ-032
+        scenarios: [SC-AC-ROADMAP-032-HP-001]
+        tests: []
+        impl: ["docs/PROJECT_STATUS.md","docs/IMPLEMENTATION_PLAN.md"]
+        verdict: NOT_TESTED
+  - req: REQ-033
+    title: "Documentación y ADRs"
+    source: "§20"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-DOC-033
+        parent: REQ-033
+        scenarios: [SC-AC-DOC-033-HP-001]
+        tests: []
+        impl: ["docs/PROJECT_STATUS.md","docs/IMPLEMENTATION_PLAN.md"]
+        verdict: NOT_TESTED
+  - req: REQ-034
+    title: "Discovery y aprobación"
+    source: "§21, §22, §24"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-GATE-034
+        parent: REQ-034
+        scenarios: [SC-AC-GATE-034-HP-001]
+        tests: []
+        impl: ["docs/PROJECT_STATUS.md","docs/IMPLEMENTATION_PLAN.md"]
+        verdict: NOT_TESTED
+  - req: REQ-035
+    title: "Lifecycle posterior"
+    source: "§23"
+    priority: CRITICAL
+    relation: contains
+    acs:
+      - id: AC-LIFE-035
+        parent: REQ-035
+        scenarios: [SC-AC-LIFE-035-HP-001]
+        tests: []
+        impl: ["docs/PROJECT_STATUS.md","docs/IMPLEMENTATION_PLAN.md"]
+        verdict: NOT_TESTED
+  - cfr: CFR-001
+    title: "Seguridad administrativa"
+    status: PROPOSED
+    relation: contains
+    acs:
+      - id: AC-SEC-001
+        parent: CFR-001
+        scenarios: [SC-AC-SEC-001-HP-001]
+        tests: ["tests/access.integration.test.ts","tests/e2e/workflow.spec.ts"]
+        impl: ["src/lib/access.ts","src/lib/auth.ts","src/lib/users.ts"]
+        verdict: NOT_TESTED
+  - cfr: CFR-002
+    title: "Accesibilidad responsive"
+    status: PROPOSED
+    relation: contains
+    acs:
+      - id: AC-A11Y-002
+        parent: CFR-002
+        scenarios: [SC-AC-A11Y-002-HP-001]
+        tests: []
+        impl: []
+        verdict: NOT_TESTED
+  - cfr: CFR-003
+    title: "Exactitud y consistencia"
+    status: PROPOSED
+    relation: contains
+    acs:
+      - id: AC-PRECISION-003
+        parent: CFR-003
+        scenarios: [SC-AC-PRECISION-003-HP-001]
+        tests: ["tests/finance.test.ts"]
+        impl: ["src/lib/finance.ts"]
+        verdict: NOT_TESTED
+  - cfr: CFR-004
+    title: "Integridad concurrente"
+    status: PROPOSED
+    relation: contains
+    acs:
+      - id: AC-RACE-004
+        parent: CFR-004
+        scenarios: [SC-AC-RACE-004-HP-001]
+        tests: ["tests/db.integration.test.ts","tests/e2e/workflow.spec.ts"]
+        impl: ["src/lib/production-service.ts","src/lib/quote-service.ts"]
+        verdict: NOT_TESTED
+  - cfr: CFR-005
+    title: "Rendimiento medible"
+    status: PROPOSED
+    relation: contains
+    acs:
+      - id: AC-PERF-005
+        parent: CFR-005
+        scenarios: [SC-AC-PERF-005-HP-001]
+        tests: ["tests/performance.integration.test.ts"]
+        impl: ["src/lib/app-service.ts","src/lib/reporting.ts"]
+        verdict: PASS
+scenario_parents:
+  SC-AC-AUTH-001-HP-001: AC-AUTH-001
+  SC-AC-ACCESS-002-HP-001: AC-ACCESS-002
+  SC-AC-ROLE-003-HP-001: AC-ROLE-003
+  SC-AC-DASH-004-HP-001: AC-DASH-004
+  SC-AC-ORDER-005-HP-001: AC-ORDER-005
+  SC-AC-ORDER-006-HP-001: AC-ORDER-006
+  SC-AC-STATE-007-HP-001: AC-STATE-007
+  SC-AC-CUSTOMER-008-HP-001: AC-CUSTOMER-008
+  SC-AC-CUSTOMER-009-HP-001: AC-CUSTOMER-009
+  SC-AC-FINANCE-010-HP-001: AC-FINANCE-010
+  SC-AC-PERIOD-011-HP-001: AC-PERIOD-011
+  SC-AC-FINANCE-012-HP-001: AC-FINANCE-012
+  SC-AC-LOSS-013-HP-001: AC-LOSS-013
+  SC-AC-EXPENSE-014-HP-001: AC-EXPENSE-014
+  SC-AC-EXPENSE-015-HP-001: AC-EXPENSE-015
+  SC-AC-FILAMENT-016-HP-001: AC-FILAMENT-016
+  SC-AC-QUOTE-017-HP-001: AC-QUOTE-017
+  SC-AC-TIME-018-HP-001: AC-TIME-018
+  SC-AC-MACHINE-019-HP-001: AC-MACHINE-019
+  SC-AC-COST-020-HP-001: AC-COST-020
+  SC-AC-POST-021-HP-001: AC-POST-021
+  SC-AC-PRICE-022-HP-001: AC-PRICE-022
+  SC-AC-QUOTE-023-HP-001: AC-QUOTE-023
+  SC-AC-ID-024-HP-001: AC-ID-024
+  SC-AC-PDF-025-HP-001: AC-PDF-025
+  SC-AC-PAYMENT-026-HP-001: AC-PAYMENT-026
+  SC-AC-REAL-027-HP-001: AC-REAL-027
+  SC-AC-LOCAL-028-HP-001: AC-LOCAL-028
+  SC-AC-UX-029-HP-001: AC-UX-029
+  SC-AC-DATA-030-HP-001: AC-DATA-030
+  SC-AC-CALC-031-HP-001: AC-CALC-031
+  SC-AC-ROADMAP-032-HP-001: AC-ROADMAP-032
+  SC-AC-DOC-033-HP-001: AC-DOC-033
+  SC-AC-GATE-034-HP-001: AC-GATE-034
+  SC-AC-LIFE-035-HP-001: AC-LIFE-035
+  SC-AC-SEC-001-HP-001: AC-SEC-001
+  SC-AC-A11Y-002-HP-001: AC-A11Y-002
+  SC-AC-PRECISION-003-HP-001: AC-PRECISION-003
+  SC-AC-RACE-004-HP-001: AC-RACE-004
+  SC-AC-PERF-005-HP-001: AC-PERF-005
+document_relations:
+  - from: docs/REQUIREMENTS.md
+    relation: defines
+    to: REQ/CFR/AC/SC
+  - from: docs/PRD.md
+    relation: derived-from
+    to: docs/REQUIREMENTS.md@0.2
+  - from: docs/FINANCIAL_RULES.md
+    relation: defines
+    to: proposed_financial_recognition_cash_receivables_breakeven
+  - from: docs/REQUIREMENTS.md
+    relation: uses
+    to: docs/FINANCIAL_RULES.md
+    authority: financial_proposals_for_blueprint_approval
+coverage:
+  forward: 0.0
+  backward: 0.0
+  backward_note: No tests or implementation artifacts exist; no verified backward coverage claimed.
+  orphans: []
+  gaps:
+    - AC-AUTH-001
+    - AC-ACCESS-002
+    - AC-ROLE-003
+    - AC-DASH-004
+    - AC-ORDER-005
+    - AC-ORDER-006
+    - AC-STATE-007
+    - AC-CUSTOMER-008
+    - AC-CUSTOMER-009
+    - AC-FINANCE-010
+    - AC-PERIOD-011
+    - AC-FINANCE-012
+    - AC-LOSS-013
+    - AC-EXPENSE-014
+    - AC-EXPENSE-015
+    - AC-FILAMENT-016
+    - AC-QUOTE-017
+    - AC-TIME-018
+    - AC-MACHINE-019
+    - AC-COST-020
+    - AC-POST-021
+    - AC-PRICE-022
+    - AC-QUOTE-023
+    - AC-ID-024
+    - AC-PDF-025
+    - AC-PAYMENT-026
+    - AC-REAL-027
+    - AC-LOCAL-028
+    - AC-UX-029
+    - AC-DATA-030
+    - AC-CALC-031
+    - AC-ROADMAP-032
+    - AC-DOC-033
+    - AC-GATE-034
+    - AC-LIFE-035
+    - AC-SEC-001
+    - AC-A11Y-002
+    - AC-PRECISION-003
+    - AC-RACE-004
+    - AC-PERF-005
+  broken: []
+notes:
+  - Test links identify passing related suites; NOT_TESTED preserves exact BDD scenarios not individually demonstrated.
+  - AC-PERF-005 passes at the authenticated service/PostgreSQL boundary, excluding HTTP/SSR/browser; see docs/performance-results.json.
+  - Executed final suites have 9 unit, 30 PostgreSQL integration and 4 browser tests passing; see docs/VALIDATION_REPORT.md.
+  - This ledger is authored but not independently verified by QA.
+  - Source sections 1 through 24 are mapped in docs/DISCOVERY.md; section 15 is a technology constraint.
+  - Later user formula supersedes initial 20/50/100 pricing and probabilistic risk.
+  - Postprocessing is confirmed in production cost before all multipliers; contingency remains material only.
+  - Blueprint approved by the owner; first real administrator provisioned privately with owner-provided credentials.

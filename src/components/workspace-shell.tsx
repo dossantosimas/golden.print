@@ -1,0 +1,20 @@
+"use client";
+import Link from "next/link";
+import Image from "next/image";
+import {usePathname,useRouter} from "next/navigation";
+import {useState} from "react";
+import {LayoutDashboard,Users,ScrollText,Boxes,Wallet,ChartNoAxesCombined,Settings,Layers,LogOut,Menu,UserRoundCog,ChevronRight,UserRound} from "lucide-react";
+import {authClient} from "@/lib/auth-client";
+import {Button} from "@/components/ui/button";
+import {Badge} from "@/components/ui/badge";
+import {Sheet,SheetTrigger,SheetContent,SheetHeader,SheetTitle} from "@/components/ui/sheet";
+import {cn} from "@/lib/utils";
+const navigation=[{href:"/dashboard",label:"Inicio",icon:LayoutDashboard},{href:"/pedidos",label:"Pedidos",icon:Boxes},{href:"/cotizaciones",label:"Cotizaciones",icon:ScrollText},{href:"/clientes",label:"Clientes",icon:Users},{href:"/filamentos",label:"Filamentos",icon:Layers},{href:"/gastos",label:"Gastos",icon:Wallet,admin:true},{href:"/finanzas",label:"Finanzas",icon:ChartNoAxesCombined,admin:true},{href:"/usuarios",label:"Usuarios",icon:UserRoundCog,admin:true},{href:"/ajustes",label:"Ajustes",icon:Settings,admin:true}];
+export function WorkspaceShell({children,name,role}:{children:React.ReactNode;name:string;role:string}){
+ const pathname=usePathname(),router=useRouter(),[open,setOpen]=useState(false),[leaving,setLeaving]=useState(false);
+ const initials=name.split(/\s+/).filter(Boolean).slice(0,2).map(part=>part[0]).join("");
+ const links=<nav aria-label="Navegación principal" className="workspace-navigation">{[false,true].map(admin=>{const items=navigation.filter(item=>Boolean(item.admin)===admin&&(!item.admin||role==="administrator"));return items.length?<div className="nav-section" key={String(admin)}><p className="nav-section-label">{admin?"Administración":"Tu negocio"}</p>{items.map(item=><Link onClick={()=>setOpen(false)} href={item.href} key={item.href} aria-current={pathname.startsWith(item.href)?"page":undefined} className={cn("nav-item",pathname.startsWith(item.href)&&"nav-item-active")}><item.icon aria-hidden="true"/><span>{item.label}</span>{pathname.startsWith(item.href)&&<ChevronRight className="nav-active-arrow" aria-hidden="true"/>}</Link>)}</div>:null;})}</nav>;
+ async function logout(){setLeaving(true);try{await authClient.signOut();router.replace("/login");router.refresh();}finally{setLeaving(false);}}
+ const brand=<Link href="/dashboard" className="workspace-brand"><Image src="/brand/golden-print-emblem.png" width={46} height={46} loading="eager" alt=""/><span>Golden Print<small>3D · Gestión del taller</small></span></Link>;
+ return <div className="workspace"><a href="#main-content" className="skip-link">Saltar al contenido</a><aside className="desktop-sidebar">{brand}{links}<div className="sidebar-account"><Link href="/perfil" className="sidebar-profile"><span className="account-avatar" aria-hidden="true">{initials}</span><span className="account-description"><strong>{name}</strong><Badge variant="secondary">{role==="administrator"?"Administrador":"Operador"}</Badge></span></Link><Button variant="ghost" onClick={logout} disabled={leaving}><LogOut data-icon="inline-start"/>Cerrar sesión</Button></div></aside><div className="workspace-body"><div className="workspace-mobile-menu"><Sheet open={open} onOpenChange={setOpen}><SheetTrigger render={<Button variant="outline" size="icon" className="mobile-menu" aria-label="Abrir menú"/>}><Menu/></SheetTrigger><SheetContent side="left" className="workspace-mobile-nav"><SheetHeader><SheetTitle>Golden Print 3D</SheetTitle></SheetHeader><div className="flex flex-col gap-6 p-4">{links}<Button variant="outline" render={<Link href="/perfil" onClick={()=>setOpen(false)}/>} nativeButton={false}><UserRound data-icon="inline-start"/>Mi perfil</Button><Button variant="outline" onClick={logout} disabled={leaving}>Cerrar sesión</Button></div></SheetContent></Sheet></div><main id="main-content" className="workspace-content">{children}</main><footer className="workspace-footer"><span>Golden Print 3D</span><span>COP · Hora de Colombia</span></footer></div></div>;
+}

@@ -1,0 +1,2 @@
+import {defineConfig,devices} from "@playwright/test";
+export default defineConfig({testDir:"./tests/e2e",fullyParallel:false,workers:1,timeout:120000,expect:{timeout:20000},use:{baseURL:"http://localhost:3001",locale:"es-CO",timezoneId:"America/Bogota",trace:"retain-on-failure",screenshot:"only-on-failure"},projects:[{name:"chromium",use:{...devices["Desktop Chrome"],channel:"msedge"}}],webServer:{command:"node scripts/e2e-server.mjs",url:"http://localhost:3001/login",reuseExistingServer:!process.env.CI,timeout:120000}});

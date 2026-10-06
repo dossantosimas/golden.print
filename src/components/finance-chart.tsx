@@ -1,0 +1,13 @@
+"use client";
+import {Bar,BarChart,CartesianGrid,Cell,ReferenceLine,XAxis,YAxis} from "recharts";
+import {ChartContainer,ChartTooltip,type ChartConfig} from "@/components/ui/chart";
+import {Empty,EmptyHeader,EmptyTitle,EmptyDescription,EmptyMedia} from "@/components/ui/empty";
+import {ChartNoAxesColumn} from "lucide-react";
+import {money} from "@/components/display";
+const config={value:{label:"COP",color:"var(--primary)"}} satisfies ChartConfig;
+type ChartRow={label:string;value:number;exact:unknown;color:string};
+export function FinanceChart({metrics}:{metrics:Record<string,unknown>}){
+ const data:ChartRow[]=[{label:"Ventas",value:Number(metrics.sales??0),exact:metrics.sales??"0",color:"#b48c36"},{label:"Costo del producto",value:Number(metrics.directCosts??0),exact:metrics.directCosts??"0",color:"#8c8273"},{label:"Operativos",value:Number(metrics.opex??0),exact:metrics.opex??"0",color:"#d98545"},{label:"Utilidad neta",value:Number(metrics.netProfit??0),exact:metrics.netProfit??"0",color:Number(metrics.netProfit??0)<0?"#dc5252":"#16a076"}];
+ if(data.every(row=>row.value===0))return <Empty className="min-h-64"><EmptyHeader><EmptyMedia variant="icon"><ChartNoAxesColumn/></EmptyMedia><EmptyTitle>Aún no hay movimientos en este período</EmptyTitle><EmptyDescription>La comparación aparecerá al registrar entregas, costos o gastos.</EmptyDescription></EmptyHeader></Empty>;
+ return <div className="flex min-w-0 flex-col gap-4"><ChartContainer config={config} className="h-64 w-full" aria-label="Comparación de ventas, costo real, gastos operativos y utilidad neta en COP"><BarChart accessibilityLayer data={data} layout="vertical" margin={{top:8,right:12,bottom:8,left:4}}><CartesianGrid horizontal={false}/><XAxis type="number" tickLine={false} axisLine={false} tickFormatter={value=>new Intl.NumberFormat("es-CO",{notation:"compact"}).format(value)}/><YAxis type="category" dataKey="label" tickLine={false} axisLine={false} width={114}/><ReferenceLine x={0} stroke="var(--border)"/><ChartTooltip cursor={{fill:"var(--muted)"}} content={({active,payload})=>{const row=payload?.[0]?.payload as ChartRow|undefined;return active&&row?<div className="rounded-lg border bg-card p-3 shadow-sm"><p className="text-xs text-muted-foreground">{row.label}</p><p className="mt-1 font-semibold tabular-nums">{money(row.exact)}</p></div>:null;}}/><Bar dataKey="value" radius={4} maxBarSize={30} isAnimationActive={false}>{data.map(row=><Cell key={row.label} fill={row.color}/>)}</Bar></BarChart></ChartContainer><dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs">{data.map(row=><div key={row.label}><dt className="text-muted-foreground">{row.label}</dt><dd className="mt-1 break-words font-semibold tabular-nums">{money(row.exact)}</dd></div>)}</dl></div>;
+}

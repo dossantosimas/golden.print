@@ -1,0 +1,2 @@
+ALTER TABLE "order" ADD COLUMN "estimated_cost_override" numeric(18, 6);--> statement-breakpoint
+ALTER TABLE "order" ADD CONSTRAINT "order_estimate_ck" CHECK ("order"."estimated_cost_override" is null or "order"."estimated_cost_override" >= 0);
