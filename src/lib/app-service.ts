@@ -21,6 +21,11 @@ export async function executeCommand(command:string,input:CommandInput){
  if(command.startsWith("users.")){const methods={create:createUser,changeRole,deactivate,reactivate,resetCredential,updateName} as const;const fn=methods[command.slice(6) as keyof typeof methods];if(!fn)throw new AccessError("VALIDATION_ERROR","Operación desconocida.");return serialize(await fn(input as never));}
  return mutate(command,input,ctx,tx=>command.startsWith("customers.")||command.startsWith("filaments.")||command.startsWith("settings.")?executeCatalogCommand(command,input,ctx,tx):command.startsWith("quotes.")||command==="orders.convertQuote"||command==="orders.createIntake"||command==="orders.updateMetadata"||command==="orders.updateCommercial"||command==="orders.archive"||command==="orders.deleteUnusedIntake"?executeQuoteCommand(command,input,ctx,tx):executeProductionCommand(command,input,ctx,tx));
 }
+export async function getFilamentOptions(){
+ const ctx=await requireAccess();
+ const rows=await getDb().select({id:s.filaments.id,brand:s.filaments.brand,model:s.filaments.model,materialType:s.filaments.materialType,color:s.filaments.color,purchaseValue:s.filaments.purchaseValue,rollWeightG:s.filaments.rollWeightG}).from(s.filaments).where(and(eq(s.filaments.orgId,ctx.organizationId),isNull(s.filaments.archivedAt))).orderBy(asc(s.filaments.brand),asc(s.filaments.id));
+ return rows.map(f=>({...f,pricePerGram:quantize(new D(f.purchaseValue).div(f.rollWeightG))}));
+}
 export async function getCustomerOptions(){
  const ctx=await requireAccess();
  return getDb().select({id:s.customers.id,name:s.customers.name,contactPhone:s.customers.contactPhone,email:s.customers.email}).from(s.customers).where(and(eq(s.customers.orgId,ctx.organizationId),isNull(s.customers.archivedAt))).orderBy(asc(s.customers.name),asc(s.customers.id));
