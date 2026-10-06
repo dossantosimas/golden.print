@@ -791,6 +791,39 @@
 .workspace-content .quote-project-overview-grid .quote-base-cost dt{color:#e3d9c6}
 .workspace-content .quote-project-overview-grid .quote-base-cost dd{color:#efcb83;font-size:22px}
 .login-panel h1{font-size:26px;line-height:1.25;font-weight:700}
+.login-mobile-header,.login-mobile-footer,.login-mobile-input-icon{display:none}
+.login-email-control{display:contents}
+@media(max-width:640px){
+  .login-scene{position:relative;isolation:isolate;display:flex;flex-direction:column;min-height:100svh;min-height:100dvh;padding:calc(22px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom));background:#211d18 url('/brand/login-background-v2.png') 24% center/auto 100% no-repeat}
+  .login-scene::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#211b16b8,#211b1680 45%,#171410e8)}
+  .login-brand{display:none}
+  .login-mobile-header{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;max-width:420px;margin:0 auto;color:#fff4df;font-size:12px;font-weight:600}
+  .login-mobile-header>span{display:flex;align-items:center;gap:7px}
+  .login-mobile-header i{width:7px;height:7px;border-radius:50%;background:#d7ac61;box-shadow:0 0 14px #d7ac6170}
+  .login-private-badge{padding:7px 9px;border:1px solid #ffffff24;border-radius:20px;background:#19151170;font-size:10px;color:#eddbc0}
+  .login-private-badge svg{width:12px;height:12px}
+  .login-panel{flex:1;display:flex;align-items:center;width:100%;padding:40px 0;background:transparent}
+  .login-form-surface{max-width:420px;padding:28px 24px 22px;border:1px solid #ffffffb0;border-radius:28px;background:#fffdfa;box-shadow:0 24px 70px #00000050;color:#30271f}
+  .login-form-surface .brand-eyebrow{font-size:10px;letter-spacing:.2em;color:#83581f;margin-bottom:14px}
+  .login-panel h1{font-size:24px;line-height:1.3;letter-spacing:-.035em}
+  .login-intro{font-size:13px;line-height:1.6;margin:8px 0 26px;color:#74675b}
+  .login-form-surface form{gap:22px}
+  .login-form-surface [data-slot=field-group]{gap:20px}
+  .login-form-surface [data-slot=field]{gap:8px}
+  .login-form-surface [data-slot=field-label]{font-size:12px;font-weight:600;color:#473b30}
+  .login-email-control{position:relative;display:block}
+  .login-mobile-input-icon{display:block;position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:#8a7b6a;pointer-events:none}
+  .login-form-surface #email,.login-form-surface [data-slot=input-group]{height:48px;border-radius:12px;background:#faf8f5;border-color:#ded6cd;box-shadow:0 1px 2px #37250f06}
+  .login-form-surface #email,.login-form-surface #password{padding-left:42px;font-size:16px;color:#30271f}
+  .login-form-surface [data-slot=input-group-addon]{padding-right:3px}
+  .login-form-surface [data-slot=input-group-addon] button{width:44px;height:44px;color:#74675b}
+  .login-form-surface form>button{height:48px;min-height:48px;position:relative;justify-content:center;border-radius:12px;background:#7a4f13;color:white;font-size:14px;font-weight:600;box-shadow:0 4px 12px #7a4f1326}
+  .login-form-surface form>button:hover{background:#68420f}
+  .login-form-surface form>button>svg{position:absolute;right:16px}
+  .login-form-surface form>p{padding-top:18px;border-top:1px solid #eee7de;text-align:center;font-size:12px;line-height:1.7;color:#74675b}
+  .login-mobile-footer{display:flex;align-items:center;justify-content:center;gap:7px;align-self:center;padding:8px 13px;border:1px solid #ffffff20;border-radius:24px;background:#171410a0;color:#eddcc0;font-size:11px}
+  .login-mobile-footer svg{width:14px;height:14px;color:#77d6ac}
+}
 
 .workspace:has(.workspace-content) .desktop-sidebar{background:#25261f;--card:#25261f;--secondary:#3c3b2e;--border:#45463a}
 .workspace:has(.workspace-content){background:var(--background)}
