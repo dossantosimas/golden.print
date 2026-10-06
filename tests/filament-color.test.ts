@@ -6,6 +6,10 @@ describe('catalog color compatibility', () => {
     expect(resolveFilamentColor(' Azul ')).toBe('#2563eb');
     expect(resolveFilamentColor('CAFÉ')).toBe('#805537');
     expect(resolveFilamentColor('Azul marino')).toBe('#1f355f');
+    expect(resolveFilamentColor('Verde limón')).toBe('#b7e532');
+    expect(resolveFilamentColor('VERDE LIMON')).toBe('#b7e532');
+    expect(resolveFilamentColor('verde-limón')).toBe('#b7e532');
+    expect(resolveFilamentColor(' Piel ')).toBe('#edc4a5');
   });
   it('accepts custom colors without permitting arbitrary CSS', () => {
     expect(resolveFilamentColor('#12A6BA')).toBe('#12a6ba');
