@@ -11,7 +11,7 @@ const edit = key.extend({ id: z.uuid(), expectedVersion: z.coerce.number().int()
 const text = z.string().trim().min(1).max(200);
 const optionalText = z.string().max(5000).optional();
 const decimal = z.string().regex(/^(0|[1-9]\d{0,11})(\.\d{1,6})?$/);
-const customerFields = z.object({ name: text, contactPhone: z.string().trim().min(1).max(100),
+const customerFields = z.object({ name: text, contactPhone: z.string().trim().max(100).default(""),
   email: z.email().max(320).optional(), socialHandle: z.string().max(200).optional(), address: optionalText, notes: optionalText });
 const filamentFields = z.object({ brand: text, model: text, materialType: text, color: text,
   purchaseValue: decimal, rollWeightG: decimal.refine((v) => new D(v).gt(0)) });

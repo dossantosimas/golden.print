@@ -84,10 +84,10 @@ export const documentCounters = pgTable("document_counter", {
 }, (t) => [primaryKey({ columns: [t.organizationId, t.kind] }), check("counter_kind_ck", sql`${t.kind} in ('COT','PED')`), check("counter_positive_ck", sql`${t.nextValue} > 0`)]);
 
 export const customers = pgTable("customer", {
-  ...business(), name: text("name").notNull(), contactPhone: text("contact_phone").notNull(), email: text("email"),
+  ...business(), name: text("name").notNull(), contactPhone: text("contact_phone").notNull().default(""), email: text("email"),
   socialHandle: text("social_handle"), address: text("address"), notes: text("notes"), archivedAt: instant("archived_at"),
 }, (t) => [unique("customer_org_id_uq").on(t.orgId, t.id), index("customer_org_name_idx").on(t.orgId, t.name),
-  check("customer_required_ck", sql`length(trim(${t.name})) > 0 and length(trim(${t.contactPhone})) > 0`)]);
+  check("customer_required_ck", sql`length(trim(${t.name})) > 0`)]);
 export const filaments = pgTable("filament", {
   ...business(), brand: text("brand").notNull(), model: text("model").notNull(), materialType: text("material_type").notNull(),
   color: text("color").notNull(), purchaseValue: decimal("purchase_value").notNull(), rollWeightG: decimal("roll_weight_g").notNull(),

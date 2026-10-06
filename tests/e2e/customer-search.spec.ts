@@ -10,8 +10,14 @@ test("buscar y limpiar clientes conserva la página y el borrador de creación",
  await expect(page).toHaveURL(/dashboard/);
  await page.goto("/clientes?view=cards&sort=name&page=2");
  const form=page.locator("#nuevo-cliente form");
+ const name=`Cliente sin telefono ${Date.now()}`;
+ await form.getByLabel("Nombre *",{exact:true}).fill(name);
+ await expect(form.locator("input[name=contactPhone]")).not.toHaveAttribute("required");
+ await form.getByRole("button",{name:"Guardar cliente",exact:true}).click();
+ await expect(form.getByRole("status")).toHaveText("Guardado correctamente.");
+ await expect(page.locator(".customer-results").getByRole("link",{name,exact:true})).toBeVisible();
  await form.getByLabel("Nombre *",{exact:true}).fill("Borrador sin guardar");
- await form.getByLabel("Teléfono *",{exact:true}).fill("3001234567");
+ await form.getByLabel("Teléfono",{exact:true}).fill("3001234567");
  const documents:string[]=[];
  const warnings:string[]=[];
  page.on("request",request=>{if(request.isNavigationRequest()&&request.frame()===page.mainFrame())documents.push(request.url());});
@@ -25,7 +31,7 @@ test("buscar y limpiar clientes conserva la página y el borrador de creación",
  }
  await page.getByRole("link",{name:"Limpiar",exact:true}).click();
  await expect(page.getByLabel("Buscar clientes",{exact:true})).toHaveValue("");
- await expect(form.getByLabel("Teléfono *",{exact:true})).toHaveValue("3001234567");
+ await expect(form.getByLabel("Teléfono",{exact:true})).toHaveValue("3001234567");
  const url=new URL(page.url());
  expect(url.searchParams.get("view")).toBe("cards");
  expect(url.searchParams.get("sort")).toBe("name");

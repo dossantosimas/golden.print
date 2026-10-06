@@ -20,7 +20,7 @@ function CustomerName({item}:{item:Customer}){
 }
 function Contact({item}:{item:Customer}){
  const digits=String(item.contactPhone??"").replace(/\D/g,""),number=digits.length===10?"57"+digits:digits;
- return <div className="customer-contact"><span>{String(item.contactPhone??"—")}</span>{/^\d{11,15}$/.test(number)&&<a href={`https://wa.me/${number}`} target="_blank" rel="noopener noreferrer" aria-label={`Abrir WhatsApp de ${item.name}`}><MessageCircle aria-hidden="true"/></a>}</div>;
+ return <div className="customer-contact"><span>{String(item.contactPhone||"—")}</span>{/^\d{11,15}$/.test(number)&&<a href={`https://wa.me/${number}`} target="_blank" rel="noopener noreferrer" aria-label={`Abrir WhatsApp de ${item.name}`}><MessageCircle aria-hidden="true"/></a>}</div>;
 }
 function History({item}:{item:Customer}){
  const active=Number(item.activeOrders??0),pending=Number(item.pendingQuotes??0),total=Number(item.orderCount??0);
@@ -49,6 +49,6 @@ export async function CustomersList({q="",page="1",sort="date",view="table"}:{q?
     <nav className="customer-pagination" aria-label="Paginación de clientes"><Button variant="outline" disabled={current<=1} render={<Link href={href(current-1)}/>} nativeButton={false}><ChevronLeft/>Anterior</Button><span>Página {current} de {pages}</span><Button variant="outline" disabled={current>=pages} render={<Link href={href(current+1)}/>} nativeButton={false}>Siguiente<ChevronRight/></Button></nav>
    </div>
    <div className="customer-help"><Info aria-hidden="true"/><p><strong>Todo el historial en un lugar.</strong> Abre un cliente para consultar sus datos, cotizaciones y pedidos.</p></div>
-  </section><Card className="customer-create" id="nuevo-cliente"><CardHeader><div><CardTitle><span/>Nuevo cliente</CardTitle><Badge variant="outline">Registro rápido</Badge></div><p>Los campos con <span>*</span> son obligatorios.</p></CardHeader><CardContent><CommandForm command="customers.create" label="Guardar cliente" fields={[{name:"name",label:"Nombre",required:true},{name:"contactPhone",label:"Teléfono",type:"tel",required:true},{name:"email",label:"Correo electrónico",type:"email"},{name:"socialHandle",label:"Red social / Canal de contacto"},{name:"address",label:"Dirección de entrega"},{name:"notes",label:"Notas / Preferencias",type:"textarea"}]}/></CardContent></Card></div>
+  </section><Card className="customer-create" id="nuevo-cliente"><CardHeader><div><CardTitle><span/>Nuevo cliente</CardTitle><Badge variant="outline">Registro rápido</Badge></div><p>Los campos con <span>*</span> son obligatorios.</p></CardHeader><CardContent><CommandForm command="customers.create" label="Guardar cliente" fields={[{name:"name",label:"Nombre",required:true},{name:"contactPhone",label:"Teléfono",type:"tel"},{name:"email",label:"Correo electrónico",type:"email"},{name:"socialHandle",label:"Red social / Canal de contacto"},{name:"address",label:"Dirección de entrega"},{name:"notes",label:"Notas / Preferencias",type:"textarea"}]}/></CardContent></Card></div>
  </div>;
 }

@@ -17,12 +17,12 @@ test("los formularios de creación se limpian al guardar y conservan datos si ha
  for(const suffix of ["A","B"]){
   const name=`Cliente reset ${tag} ${suffix}`;
   await customer.getByLabel("Nombre *",{exact:true}).fill(name);
-  await customer.getByLabel("Teléfono *",{exact:true}).fill("3001234567");
+  await customer.getByLabel("Teléfono",{exact:true}).fill("3001234567");
   await customer.getByLabel("Notas / Preferencias",{exact:true}).fill("Una nota");
   await customer.getByRole("button",{name:"Guardar cliente",exact:true}).click();
   await expect(customer.getByRole("status")).toHaveText("Guardado correctamente.");
   await expect(customer.getByLabel("Nombre *",{exact:true})).toHaveValue("");
-  await expect(customer.getByLabel("Teléfono *",{exact:true})).toHaveValue("");
+  await expect(customer.getByLabel("Teléfono",{exact:true})).toHaveValue("");
   await expect(customer.getByLabel("Notas / Preferencias",{exact:true})).toHaveValue("");
   await expect(page.getByRole("row").filter({hasText:name})).toBeVisible();
  }
