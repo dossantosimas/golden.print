@@ -1,5 +1,6 @@
-import {CalendarDays, Check, LockKeyhole, PackageCheck, UserRound} from "lucide-react";
+import {CalendarDays, Check, LockKeyhole, PackageCheck} from "lucide-react";
 import {CommandForm} from "@/components/command-form";
+import {Button} from "@/components/ui/button";
 import {Badge} from "@/components/ui/badge";
 import {display,money} from "@/components/display";
 import {D} from "@/lib/finance";
@@ -21,9 +22,15 @@ export function OrderStatus({item,attempts,seconds,deliveryDate,today}:{item:Row
    {status==="printing"&&attempt&&<div className="order-status-start"><div><p>Impresión en curso</p><small>Tiempo estimado: {String(seconds/3600n)} h {String(seconds%3600n/60n)} min</small><CommandForm command="production.completeAttempt" payload={{attemptId:attempt.id,orderVersion:item.version}} label="Finalizar impresión"/></div><details className="order-inline-editor"><summary>Registrar fallo</summary><CommandForm command="production.failAttempt" payload={{attemptId:attempt.id,orderVersion:item.version}} fields={[{name:"reason",label:"Motivo del fallo",required:true}]} label="Registrar fallo"/></details></div>}
    {["finished","delivered","closed"].includes(status)&&<>
     {["delivered","closed"].includes(status)&&<div className="order-delivery-confirmation"><Check/><div><strong className="order-delivered-message">Pedido entregado · {deliveryDate}{closed?" · Cerrado":""}</strong><small>{closed?"Pedido cerrado. Disponible solo para consulta.":"Entrega registrada. Puedes corregir la fecha antes del cierre."}</small></div></div>}
-    <div className="order-delivery-grid"><section className="order-delivery-config"><h3><CalendarDays/>Fecha real de entrega</h3>{status==="finished"?<CommandForm command="orders.transition" payload={{orderId:id,expectedVersion:item.version,target:"delivered"}} fields={[{name:"deliveryDate",label:"Fecha real de entrega",type:"date",value:today,required:true}]} label="Registrar entrega"/>:<><p>{deliveryDate}</p>{!closed&&<details className="order-inline-editor"><summary>Corregir fecha de entrega</summary><CommandForm command="orders.updateDeliveryDate" payload={{orderId:id,expectedVersion:item.version}} fields={[{name:"deliveryDate",label:"Fecha real de entrega",type:"date",value:deliveryDate,required:true}]} label="Guardar fecha corregida"/></details>}</>}</section><aside className="order-delivery-summary"><h3><UserRound/>Cliente del pedido</h3><strong>{String(item.customerName??"Sin cliente")}</strong>{Boolean(item.customerPhone)&&<span>{String(item.customerPhone)}</span>}<dl><div><dt>Entrega prevista</dt><dd>{String(item.promisedDeliveryDate??"Sin fecha prevista")}</dd></div><div><dt>Estado de entrega</dt><dd>{closed?"Cerrada":status==="delivered"?"Registrada":"Pendiente"}</dd></div></dl></aside></div>
+    <div className="order-delivery-grid"><section className="order-delivery-config"><h3><CalendarDays/>Fecha real de entrega</h3>{status==="finished"?<CommandForm command="orders.transition" payload={{orderId:id,expectedVersion:item.version,target:"delivered"}} fields={[{name:"deliveryDate",label:"Fecha real de entrega",type:"date",value:today,required:true}]} label="Registrar entrega"/>:<><p>{deliveryDate}</p>{!closed&&<details className="order-inline-editor"><summary>Corregir fecha de entrega</summary><CommandForm command="orders.updateDeliveryDate" payload={{orderId:id,expectedVersion:item.version}} fields={[{name:"deliveryDate",label:"Fecha real de entrega",type:"date",value:deliveryDate,required:true}]} label="Guardar fecha corregida"/></details>}</>}</section>{status!=="finished"&&<aside className="order-close-panel">
+      <h3><LockKeyhole/>Cierre del pedido</h3>
+      {closed?<p>Cierre definitivo realizado. Pedido disponible solo para consulta.</p>:<>
+       <p>{paid?"Al cerrar, este pedido quedará solo para consulta.":`Registra el saldo pendiente de ${money(item.balance)} en Estado de cuenta comercial para habilitar el cierre.`}</p>
+       {paid?<CommandForm command="orders.close" payload={{orderId:id,expectedVersion:item.version}} fields={[{name:"confirmClose",label:"Confirmo el cierre definitivo del pedido",type:"checkbox",required:true}]} label="Cerrar pedido"/>:<Button type="button" disabled>Cerrar pedido</Button>}
+      </>}
+     </aside>}</div>
    </>}
   </div>
-  {["delivered","closed"].includes(status)&&<footer className="order-status-footer"><p><LockKeyhole/>{closed?"Cierre definitivo realizado.":paid?"Al cerrar, este pedido quedará solo para consulta.":`Para cerrar, registra el saldo pendiente de ${money(item.balance)} en Estado de cuenta comercial.`}</p>{!closed&&paid&&<details className="order-inline-editor"><summary>Cerrar pedido</summary><CommandForm command="orders.close" payload={{orderId:id,expectedVersion:item.version}} fields={[{name:"confirmClose",label:"Cerrar definitivamente y bloquear cambios en este pedido, costos y pagos",type:"checkbox",required:true}]} label="Cerrar pedido"/></details>}</footer>}
+
  </section>;
 }
