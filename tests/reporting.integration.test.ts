@@ -190,6 +190,23 @@ describe("real PostgreSQL reporting financial oracles", () => {
     await command("losses.create", { recognizedDate: "2026-09-20", category: "fixture", description: "Loss", amount: "100" });
     expect((await report()).metrics).toMatchObject({ sales: "1000.000000", netProfit: "300.000000", breakEven: "400.000000", breakEvenProgress: "250.000000" });
   });
+  it("shows current accumulated cash independently of the selected period and excludes voided or future cash",async()=>{
+    const id=await order("1000");
+    await payment(id,"300","2026-08-15");
+    await payment(id,"200","2026-09-15");
+    await expense("50");
+    const future=await expense("100");
+    await getDb().update(s.cashMovements).set({businessDate:"2099-01-01"}).where(eq(s.cashMovements.expenseId,String(future.id)));
+    const first=await report();
+    expect(first.metrics).toMatchObject({cashIn:"200.000000",cashOut:"50.000000",cashNet:"150.000000",cashTotalIn:"500.000000",cashTotalOut:"50.000000",cashBalance:"450.000000"});
+    const other=await reportingData(ctx,"2026-09-16:2026-09-30");
+    expect(other.metrics).toMatchObject({cashNet:"0.000000",cashBalance:"450.000000"});
+    const [paid]=await getDb().select().from(s.payments).where(eq(s.payments.orderId,id));
+    await command("payments.correct",{paymentId:paid.id,reason:"Registro falso"});
+    const after=await report();
+    expect(after.metrics).toMatchObject({cashTotalIn:paid.amount==="300"?"200.000000":"300.000000",cashBalance:paid.amount==="300"?"150.000000":"250.000000"});
+    expect((await report({...ctx,role:"operator"})).metrics).not.toHaveProperty("cashBalance");
+  });
   it("uses Bogota boundaries and excludes later confirmed receivables in ranking", async () => {
     await order("100", new Date("2026-09-01T04:59:59Z"));
     await order("200", new Date("2026-09-01T05:00:00Z"));
