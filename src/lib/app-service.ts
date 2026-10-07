@@ -26,6 +26,10 @@ export async function getFilamentOptions(){
  const rows=await getDb().select({id:s.filaments.id,brand:s.filaments.brand,model:s.filaments.model,materialType:s.filaments.materialType,color:s.filaments.color,purchaseValue:s.filaments.purchaseValue,rollWeightG:s.filaments.rollWeightG}).from(s.filaments).where(and(eq(s.filaments.orgId,ctx.organizationId),isNull(s.filaments.archivedAt))).orderBy(asc(s.filaments.brand),asc(s.filaments.id));
  return rows.map(f=>({...f,pricePerGram:quantize(new D(f.purchaseValue).div(f.rollWeightG))}));
 }
+export async function getProvisionalOrderOptions(){
+ const ctx=await requireAccess();
+ return getDb().select({id:s.orders.id,code:s.orders.code,title:s.orders.title,customerId:s.orders.customerId}).from(s.orders).where(and(eq(s.orders.orgId,ctx.organizationId),isNull(s.orders.confirmedAt),isNull(s.orders.archivedAt),eq(s.orders.status,"not_started"))).orderBy(desc(s.orders.createdAt));
+}
 export async function getCustomerOptions(){
  const ctx=await requireAccess();
  return getDb().select({id:s.customers.id,name:s.customers.name,contactPhone:s.customers.contactPhone,email:s.customers.email}).from(s.customers).where(and(eq(s.customers.orgId,ctx.organizationId),isNull(s.customers.archivedAt))).orderBy(asc(s.customers.name),asc(s.customers.id));
