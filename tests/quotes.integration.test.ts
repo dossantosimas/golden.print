@@ -103,6 +103,32 @@ beforeAll(async () => { await migrate(db, { migrationsFolder: "./drizzle" }); })
 afterAll(async () => { await pool.end(); });
 
 describe("real persisted quote contracts", () => {
+  it("duplica para cambiar filamentos y elimina del listado sin alterar el pedido original",async()=>rolledBack(async(tx,ctx)=>{
+    const {quoteId,orderId}=await confirmedOrder(tx,ctx);
+    const [source]=await tx.select().from(s.quotes).where(eq(s.quotes.id,quoteId));
+    const [revision]=await tx.select().from(s.quoteRevisions).where(eq(s.quoteRevisions.id,source.currentRevisionId!));
+    const filamentId=randomUUID();
+    await tx.insert(s.filaments).values({id:filamentId,orgId:ctx.organizationId,createdBy:ctx.userId,brand:"Copia",model:"PLA",materialType:"PLA",color:"Verde limón",purchaseValue:"70000",rollWeightG:"1000"});
+    const copyId=(await executeQuoteCommand("quotes.duplicate",{quoteId,expectedVersion:3,idempotencyKey:randomUUID()},ctx,tx)).id;
+    const changed={...input(),projectName:"Copia editable",materials:[{filamentId,grams:"25",pricePerGram:"70"}]};
+    await executeQuoteCommand("quotes.updateDraft",{...changed,quoteId:copyId,expectedVersion:1},ctx,tx);
+    const [copy]=await tx.select().from(s.quotes).where(eq(s.quotes.id,copyId));
+    expect(copy.duplicatedFromId).toBe(quoteId);
+    const [material]=await tx.select().from(s.quoteMaterials).where(eq(s.quoteMaterials.revisionId,copy.currentRevisionId!));
+    expect(material.filamentId).toBe(filamentId);
+    const [preserved]=await tx.select().from(s.quoteRevisions).where(eq(s.quoteRevisions.id,revision.id));
+    expect(preserved).toEqual(revision);
+    await executeQuoteCommand("quotes.archive",{quoteId,expectedVersion:3,idempotencyKey:randomUUID()},ctx,tx);
+    const [archived]=await tx.select().from(s.quotes).where(eq(s.quotes.id,quoteId));
+    expect(archived.archivedAt).toBeInstanceOf(Date);
+    const [order]=await tx.select().from(s.orders).where(eq(s.orders.id,orderId));
+    expect(order.sourceQuoteId).toBe(quoteId);
+    expect(order.acceptedRevisionId).toBe(revision.id);
+    expect(order.agreedPrice).toBe(revision.quotedPrice);
+    await executeQuoteCommand("quotes.archive",{quoteId:copyId,expectedVersion:2,idempotencyKey:randomUUID()},ctx,tx);
+    const events=await tx.select().from(s.auditEvents).where(and(eq(s.auditEvents.entityId,copyId),eq(s.auditEvents.action,"quotes.archive")));
+    expect(events).toHaveLength(1);
+  }));
   it("freezes published inputs, exact prices and filament snapshots after rate changes", async () => {
     await rolledBack(async (tx, ctx) => {
       const quote = await executeQuoteCommand("quotes.createDraft", input(), ctx, tx);
