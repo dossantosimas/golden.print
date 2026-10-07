@@ -138,6 +138,9 @@ export async function executeProductionCommand(command: string, raw: Input, ctx:
     const order = await lockOrder(tx, ctx, input.orderId);
     version(order.version, input.expectedVersion);
     if (order.status !== "delivered") fail("INVALID_TRANSITION", "Registra la entrega antes de cerrar o corregir su fecha.");
+    if(command==="orders.close"&&!new Decimal(order.agreedPrice!).minus(await sumPayments(tx,ctx,order.id)).isZero()){
+      fail("PAYMENT_PENDING","Registra el pago completo antes de cerrar el pedido.");
+    }
     const update = "deliveryDate" in input
       ? { deliveredAt: new Date(`${input.deliveryDate}T00:00:00-05:00`) }
       : { closedAt: new Date(), status: "closed" };

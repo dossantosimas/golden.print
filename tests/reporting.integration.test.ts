@@ -124,6 +124,7 @@ describe("real PostgreSQL reporting financial oracles", () => {
   });
   it("customer directory counts actual activity and keeps global metrics when searching",async()=>{
     const delivered=await order("1000"),active=await order("500",null);
+    await payment(delivered,"1000");
     await command("orders.close",{orderId:delivered,expectedVersion:1,confirmClose:true});
     const [pending]=await getDb().select().from(s.orders).where(eq(s.orders.id,active));
     await getDb().update(s.quoteRevisions).set({status:"sent"}).where(eq(s.quoteRevisions.id,pending.acceptedRevisionId!));

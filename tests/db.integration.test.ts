@@ -82,6 +82,15 @@ describe("PostgreSQL integrity and real commands", () => {
     await expect(command("orders.updateDeliveryDate", { orderId, expectedVersion: 4, deliveryDate: "2026-02-30" })).rejects.toThrow();
     await command("orders.updateDeliveryDate", { orderId, expectedVersion: 4, deliveryDate: "2026-10-03" });
     await expect(command("orders.close", { orderId, expectedVersion: 4, confirmClose: true })).rejects.toMatchObject({ code: "VERSION_CONFLICT" });
+    const close={orderId,expectedVersion:5,confirmClose:true};
+    await expect(command("orders.close",close)).rejects.toMatchObject({code:"PAYMENT_PENDING"});
+    const partial=await command("payments.create",{orderId,paymentDate:"2026-10-03",amount:"300",idempotencyKey:randomUUID()});
+    await expect(command("orders.close",close)).rejects.toMatchObject({code:"PAYMENT_PENDING"});
+    await command("payments.correct",{paymentId:partial.id,reason:"Pago registrado por error",idempotencyKey:randomUUID()});
+    await expect(command("orders.close",close)).rejects.toMatchObject({code:"PAYMENT_PENDING"});
+    [order]=await db.select().from(schema.orders).where(eq(schema.orders.id,orderId));
+    expect(order.closedAt).toBeNull();expect(order.status).toBe("delivered");expect(order.version).toBe(5);
+    await command("payments.settleBalance",{orderId,paymentDate:"2026-10-03",idempotencyKey:randomUUID()});
     await command("orders.close", { orderId, expectedVersion: 5, confirmClose: true });
     [order] = await db.select().from(schema.orders).where(eq(schema.orders.id, orderId));
     expect(order.closedAt).toBeInstanceOf(Date);

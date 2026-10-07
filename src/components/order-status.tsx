@@ -1,13 +1,15 @@
 import {CalendarDays, Check, LockKeyhole, PackageCheck, UserRound} from "lucide-react";
 import {CommandForm} from "@/components/command-form";
 import {Badge} from "@/components/ui/badge";
-import {display} from "@/components/display";
+import {display,money} from "@/components/display";
+import {D} from "@/lib/finance";
 
 type Row=Record<string,unknown>;
 const stages=["not_started","printing","finished","delivered","closed"];
 function stamp(value:unknown){return value?new Intl.DateTimeFormat("es-CO",{timeZone:"America/Bogota",dateStyle:"medium",timeStyle:"short"}).format(new Date(String(value))):null;}
 export function OrderStatus({item,attempts,seconds,deliveryDate,today}:{item:Row;attempts:Row[];seconds:bigint;deliveryDate:string;today:string}){
  const id=String(item.id),status=String(item.status),closed=Boolean(item.closedAt),current=status==="damaged"?1:stages.indexOf(status);
+ const paid=item.balance!=null&&new D(String(item.balance)).isZero();
  const attempt=attempts.find(a=>a.status==="printing"),success=attempts.find(a=>a.status==="success");
  const times=[stamp(item.confirmedAt),stamp(attempt?.startedAt??success?.startedAt),stamp(success?.completedAt),item.deliveredAt?deliveryDate:null,stamp(item.closedAt)];
  const captions=["Cotización aceptada",status==="damaged"?"Impresión fallida":"Impresión del producto","Impresión finalizada","Entrega al cliente","Cierre definitivo"];
@@ -22,6 +24,6 @@ export function OrderStatus({item,attempts,seconds,deliveryDate,today}:{item:Row
     <div className="order-delivery-grid"><section className="order-delivery-config"><h3><CalendarDays/>Fecha real de entrega</h3>{status==="finished"?<CommandForm command="orders.transition" payload={{orderId:id,expectedVersion:item.version,target:"delivered"}} fields={[{name:"deliveryDate",label:"Fecha real de entrega",type:"date",value:today,required:true}]} label="Registrar entrega"/>:<><p>{deliveryDate}</p>{!closed&&<details className="order-inline-editor"><summary>Corregir fecha de entrega</summary><CommandForm command="orders.updateDeliveryDate" payload={{orderId:id,expectedVersion:item.version}} fields={[{name:"deliveryDate",label:"Fecha real de entrega",type:"date",value:deliveryDate,required:true}]} label="Guardar fecha corregida"/></details>}</>}</section><aside className="order-delivery-summary"><h3><UserRound/>Cliente del pedido</h3><strong>{String(item.customerName??"Sin cliente")}</strong>{Boolean(item.customerPhone)&&<span>{String(item.customerPhone)}</span>}<dl><div><dt>Entrega prevista</dt><dd>{String(item.promisedDeliveryDate??"Sin fecha prevista")}</dd></div><div><dt>Estado de entrega</dt><dd>{closed?"Cerrada":status==="delivered"?"Registrada":"Pendiente"}</dd></div></dl></aside></div>
    </>}
   </div>
-  {["delivered","closed"].includes(status)&&<footer className="order-status-footer"><p><LockKeyhole/>{closed?"Cierre definitivo realizado.":"Al cerrar, este pedido quedará solo para consulta."}</p>{!closed&&<details className="order-inline-editor"><summary>Cerrar pedido</summary><CommandForm command="orders.close" payload={{orderId:id,expectedVersion:item.version}} fields={[{name:"confirmClose",label:"Cerrar definitivamente y bloquear cambios en este pedido, costos y pagos",type:"checkbox",required:true}]} label="Cerrar pedido"/></details>}</footer>}
+  {["delivered","closed"].includes(status)&&<footer className="order-status-footer"><p><LockKeyhole/>{closed?"Cierre definitivo realizado.":paid?"Al cerrar, este pedido quedará solo para consulta.":`Para cerrar, registra el saldo pendiente de ${money(item.balance)} en Estado de cuenta comercial.`}</p>{!closed&&paid&&<details className="order-inline-editor"><summary>Cerrar pedido</summary><CommandForm command="orders.close" payload={{orderId:id,expectedVersion:item.version}} fields={[{name:"confirmClose",label:"Cerrar definitivamente y bloquear cambios en este pedido, costos y pagos",type:"checkbox",required:true}]} label="Cerrar pedido"/></details>}</footer>}
  </section>;
 }
