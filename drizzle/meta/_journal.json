@@ -43,6 +43,13 @@
       "when": 1791304802802,
       "tag": "0005_light_black_tom",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791383871015,
+      "tag": "0006_tan_karnak",
+      "breakpoints": true
     }
   ]
 }

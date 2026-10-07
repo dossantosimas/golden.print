@@ -145,7 +145,7 @@ export const orders = pgTable("order", {
   closedAt: instant("closed_at"),
   agreedPrice: money("agreed_price"), estimatedCostOverride: decimal("estimated_cost_override"), costCompleteness: text("cost_completeness").default("incomplete").notNull(), notes: text("notes"), archivedAt: instant("archived_at"),
 }, (t) => [unique("order_org_id_uq").on(t.orgId, t.id), unique("order_org_code_uq").on(t.orgId, t.code), unique("order_org_number_uq").on(t.orgId, t.sequenceNumber),
-  unique("order_source_quote_uq").on(t.sourceQuoteId), unique("order_accepted_revision_uq").on(t.acceptedRevisionId),
+  unique("order_source_quote_customer_uq").on(t.orgId, t.sourceQuoteId, t.customerId), index("order_accepted_revision_idx").on(t.acceptedRevisionId),
   index("order_status_date_idx").on(t.orgId, t.status, t.orderDate), index("order_customer_idx").on(t.orgId, t.customerId, t.confirmedAt),
   index("order_delivered_idx").on(t.orgId, t.deliveredAt), index("order_confirmed_idx").on(t.orgId, t.confirmedAt),
   foreignKey({ columns: [t.orgId, t.customerId], foreignColumns: [customers.orgId, customers.id] }).onDelete("restrict"),

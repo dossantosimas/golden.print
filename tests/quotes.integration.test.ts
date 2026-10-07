@@ -40,6 +40,23 @@ async function confirmedOrder(tx: DbTransaction, ctx: AccessContext) {
 }
 
 describe("ajustes comerciales del pedido",()=>{
+  it("crea otro pedido para otro cliente con la misma revisión aceptada",async()=>rolledBack(async(tx,ctx)=>{
+    const {quoteId,orderId}=await confirmedOrder(tx,ctx);
+    const customerId=randomUUID();
+    await tx.insert(s.customers).values({id:customerId,orgId:ctx.organizationId,createdBy:ctx.userId,name:"Segundo cliente"});
+    const [original]=await tx.select().from(s.orders).where(eq(s.orders.id,orderId));
+    const created=await executeQuoteCommand("orders.convertQuote",{quoteId,expectedVersion:3,customerId,idempotencyKey:randomUUID()},ctx,tx);
+    expect(created.id).not.toBe(orderId);
+    const [second]=await tx.select().from(s.orders).where(eq(s.orders.id,created.id));
+    expect(second.customerId).toBe(customerId);
+    expect(second.sourceQuoteId).toBe(quoteId);
+    expect(second.acceptedRevisionId).toBe(original.acceptedRevisionId);
+    expect(second.agreedPrice).toBe(original.agreedPrice);
+    const [preserved]=await tx.select().from(s.orders).where(eq(s.orders.id,orderId));
+    expect(preserved).toEqual(original);
+    const retry=await executeQuoteCommand("orders.convertQuote",{quoteId,expectedVersion:3,customerId,idempotencyKey:randomUUID()},ctx,tx);
+    expect(retry.id).toBe(created.id);
+  }));
   it("conserva la cotización, registra motivo y actualiza precio y costo estimado",async()=>rolledBack(async(tx,ctx)=>{
     const {quoteId,orderId}=await confirmedOrder(tx,ctx);
     const [original]=await tx.select().from(s.quoteRevisions).where(eq(s.quoteRevisions.quoteId,quoteId));

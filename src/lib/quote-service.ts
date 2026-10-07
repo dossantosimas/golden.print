@@ -92,14 +92,14 @@ async function lockedQuote(tx: DbTransaction, ctx: AccessContext, data: z.infer<
 
 async function convert(tx: DbTransaction, ctx: AccessContext, quote: typeof quotes.$inferSelect,
   revision: typeof quoteRevisions.$inferSelect, customerId?: string, existingIntakeId?: string) {
-  const [existing] = await tx.select().from(orders).where(and(eq(orders.orgId, ctx.organizationId), eq(orders.sourceQuoteId, quote.id))).limit(1);
-  if (existing) {if(existingIntakeId&&existing.id!==existingIntakeId)throw new AccessError("DEPENDENCY_CONFLICT","Esta cotización ya está vinculada a otro pedido.");return result(existing.id, "orders");}
   if (revision.status !== "accepted" || revision.quotedPrice === null) throw new AccessError("INVALID_TRANSITION", "Acepta la cotización antes de convertirla.");
   const clientId = customerId ?? quote.customerId;
   if (!clientId) throw new AccessError("VALIDATION_ERROR", "Selecciona un cliente para confirmar el pedido.");
   const [client] = await tx.select({ id: customers.id }).from(customers).where(and(eq(customers.orgId, ctx.organizationId),
     eq(customers.id, clientId), isNull(customers.archivedAt))).limit(1);
   if (!client) throw new AccessError("NOT_FOUND", "Cliente no encontrado o archivado.");
+  const [existing] = await tx.select().from(orders).where(and(eq(orders.orgId, ctx.organizationId), eq(orders.sourceQuoteId, quote.id), eq(orders.customerId, clientId))).limit(1);
+  if (existing) {if(existingIntakeId&&existing.id!==existingIntakeId)throw new AccessError("DEPENDENCY_CONFLICT","Esta cotización ya está vinculada a otro pedido de este cliente.");return result(existing.id, "orders");}
   let orderId: string;
   if (existingIntakeId) {
     const [intake] = await tx.select().from(orders).where(and(eq(orders.orgId, ctx.organizationId), eq(orders.id, existingIntakeId))).for("update");
