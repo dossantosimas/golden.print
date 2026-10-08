@@ -5,7 +5,7 @@ export const filamentColors: Record<string, string> = {
   morado: "#874bc1", violeta: "#874bc1", rosado: "#ef8eb4", rosa: "#ef8eb4",
   dorado: "#c5a35f", plateado: "#bcc2cb", cafe: "#805537", marron: "#805537",
   beige: "#dbccb1", azulmarino: "#1f355f", azulcielo: "#74bcea", turquesa: "#38b9b2",
-  verdelimon: "#b7e532", piel: "#edc4a5",
+  verdelimon: "#b7e532", piel: "#edc4a5", madera: "#b8875b",
 };
 
 export function resolveFilamentColor(value: unknown): string | null {
