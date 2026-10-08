@@ -69,11 +69,12 @@ export async function getWorkspaceData(entity:string,q="",filter="",options:{pag
  const ids=rows.map(r=>r.order.id);
  const pays=ids.length?await db.select({orderId:s.payments.orderId,amount:s.payments.amount}).from(s.payments).where(and(eq(s.payments.orgId,org),isNull(s.payments.voidedAt),inArray(s.payments.orderId,ids))):[];
  const revisionIds=rows.map(r=>r.order.acceptedRevisionId).filter((id):id is string=>id!==null);
- const revisions=revisionIds.length?await db.select({id:s.quoteRevisions.id,cost:s.quoteRevisions.estimatedCost}).from(s.quoteRevisions).where(and(eq(s.quoteRevisions.orgId,org),inArray(s.quoteRevisions.id,revisionIds))):[];
+ const revisions=revisionIds.length?await db.select({id:s.quoteRevisions.id,cost:s.quoteRevisions.estimatedCost,printSeconds:s.quoteRevisions.printSeconds}).from(s.quoteRevisions).where(and(eq(s.quoteRevisions.orgId,org),inArray(s.quoteRevisions.id,revisionIds))):[];
  const quotedCosts=new Map(revisions.map(r=>[r.id,r.cost]));
+ const quotedTimes=new Map(revisions.map(r=>[r.id,r.printSeconds]));
  const paid=new Map<string,InstanceType<typeof D>>();
  for(const p of pays)paid.set(p.orderId,(paid.get(p.orderId)??new D(0)).plus(p.amount));
- items=rows.map(({order:o,customer})=>{const received=paid.get(o.id)??new D(0),balance=o.agreedPrice===null?null:new D(o.agreedPrice).minus(received).toFixed(0);return {...o,customer,receivedAmount:received.toFixed(0),balance,paymentStatus:balance==="0"?"paid":"pending",actualCost:o.acceptedRevisionId?quantize(new D(o.estimatedCostOverride??quotedCosts.get(o.acceptedRevisionId)??0)):null};});
+ items=rows.map(({order:o,customer})=>{const received=paid.get(o.id)??new D(0),balance=o.agreedPrice===null?null:new D(o.agreedPrice).minus(received).toFixed(0);return {...o,customer,printSeconds:o.acceptedRevisionId?quotedTimes.get(o.acceptedRevisionId)??null:null,receivedAmount:received.toFixed(0),balance,paymentStatus:balance==="0"?"paid":"pending",actualCost:o.acceptedRevisionId?quantize(new D(o.estimatedCostOverride??quotedCosts.get(o.acceptedRevisionId)??0)):null};});
  const [settings]=await db.select().from(s.businessSettings).where(eq(s.businessSettings.organizationId,org));
 
  const materials=revisionIds.length?await db.select({revisionId:s.quoteMaterials.revisionId,grams:s.quoteMaterials.grams,filamentSnapshot:s.quoteMaterials.filamentSnapshot}).from(s.quoteMaterials).where(and(eq(s.quoteMaterials.orgId,org),inArray(s.quoteMaterials.revisionId,revisionIds))).orderBy(asc(s.quoteMaterials.id)):[];
