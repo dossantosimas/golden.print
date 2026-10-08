@@ -15,3 +15,12 @@ export function resolveFilamentColor(value: unknown): string | null {
   const key = text.normalize("NFD").replace(/[\u0300-\u036f\s-]/g, "").toLowerCase();
   return Object.hasOwn(filamentColors, key) ? filamentColors[key] : null;
 }
+
+export function filamentColorBackground(value: unknown): string | null {
+  const parts = String(value ?? "").split(/[\/+]/).map(part => part.trim());
+  const colors = parts.map(resolveFilamentColor);
+  if (colors.some(color => !color)) return null;
+  if (colors.length === 1) return colors[0];
+  const stops = colors.map((color, index) => `${color} ${index * 100 / colors.length}% ${(index + 1) * 100 / colors.length}%`);
+  return `linear-gradient(135deg, ${stops.join(", ")})`;
+}
