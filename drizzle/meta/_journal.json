@@ -50,6 +50,13 @@
       "when": 1791383871015,
       "tag": "0006_tan_karnak",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791475855097,
+      "tag": "0007_dark_trauma",
+      "breakpoints": true
     }
   ]
 }

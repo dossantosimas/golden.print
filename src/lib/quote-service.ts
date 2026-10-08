@@ -57,8 +57,8 @@ async function persistRevision(tx: DbTransaction, ctx: AccessContext, quoteId: s
   }
   const calculated = calculateQuote(input);
   await tx.insert(quoteRevisions).values({ id: revisionId, orgId: ctx.organizationId, createdBy: ctx.userId,
-    quoteId, revisionNumber, status: "draft", projectName: input.projectName, description: input.description,
-    clientSnapshot, printSeconds: BigInt(input.printSeconds), formulaSnapshot: { formulaVersion: 1, ...input.formula, inputSnapshot: input },
+    quoteId, revisionNumber, quantity: input.quantity, status: "draft", projectName: input.projectName, description: input.description,
+    clientSnapshot, printSeconds: BigInt(input.printSeconds)*BigInt(input.quantity), formulaSnapshot: { formulaVersion: 1, ...input.formula, inputSnapshot: input },
     materialCost: calculated.components.material, energyCost: calculated.components.energy,
     machineCost: calculated.components.machine, contingencyCost: calculated.components.contingency,
     postprocessCost: calculated.components.postprocess, estimatedCost: calculated.costProduction,
@@ -66,10 +66,10 @@ async function persistRevision(tx: DbTransaction, ctx: AccessContext, quoteId: s
     customerNotes: input.customerNotes, internalNotes: input.internalNotes });
   await tx.insert(quoteMaterials).values(materialSnapshots.map(({ line, snapshot }, position) => ({
     orgId: ctx.organizationId, createdBy: ctx.userId, revisionId, filamentId: line.filamentId, filamentSnapshot: snapshot,
-    grams: line.grams, pricePerGram: line.pricePerGram, cost: quantize(new D(line.grams).times(line.pricePerGram)), position })));
+    grams: new D(line.grams).times(input.quantity).toFixed(6), pricePerGram: line.pricePerGram, cost: quantize(new D(line.grams).times(line.pricePerGram).times(input.quantity)), position })));
   if (input.postprocess.length) await tx.insert(quotePostprocesses).values(input.postprocess.map((line, position) => ({
     orgId: ctx.organizationId, createdBy: ctx.userId, revisionId, description: line.description,
-    category: line.category, estimatedAmount: line.amount, position })));
+    category: line.category, estimatedAmount: new D(line.amount).times(input.quantity).toFixed(6), position })));
   const options = await tx.insert(quotePriceOptions).values(calculated.priceOptions.map((option) => ({
     orgId: ctx.organizationId, createdBy: ctx.userId, revisionId, level: option.level,
     label: { minimum: "Mínimo", medium: "Medio", high: "Alto" }[option.level], multiplier: option.multiplier,

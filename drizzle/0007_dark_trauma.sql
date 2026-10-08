@@ -1,0 +1,2 @@
+ALTER TABLE "quote_revision" ADD COLUMN "quantity" integer DEFAULT 1 NOT NULL;--> statement-breakpoint
+ALTER TABLE "quote_revision" ADD CONSTRAINT "revision_quantity_ck" CHECK ("quote_revision"."quantity" between 1 and 10000);

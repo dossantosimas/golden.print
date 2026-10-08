@@ -17,7 +17,7 @@ export async function GET(_request: Request, context: { params: Promise<{ quoteI
     const params = z.object({ quoteId: z.uuid(), revisionId: z.uuid() }).parse(await context.params);
     const [row] = await getDb().select({ code: quotes.code, revisionNumber: quoteRevisions.revisionNumber,
       status: quoteRevisions.status, projectName: quoteRevisions.projectName, description: quoteRevisions.description,
-      clientSnapshot: quoteRevisions.clientSnapshot, price: quoteRevisions.quotedPrice,
+      clientSnapshot: quoteRevisions.clientSnapshot, price: quoteRevisions.quotedPrice, quantity: quoteRevisions.quantity,
       businessDate: quoteRevisions.businessDate, validUntil: quoteRevisions.validUntil,
       customerNotes: quoteRevisions.customerNotes }).from(quoteRevisions)
       .innerJoin(quotes, and(eq(quotes.id, quoteRevisions.quoteId), eq(quotes.orgId, quoteRevisions.orgId)))
@@ -29,7 +29,7 @@ export async function GET(_request: Request, context: { params: Promise<{ quoteI
     const client = row.clientSnapshot as { name?: string; contactPhone?: string } | null;
     const bytes = await renderCommercialQuote({ code: row.code, revisionNumber: row.revisionNumber, status: row.status,
       projectName: row.projectName, description: row.description, customerName: client?.name ?? "Sin cliente",
-      customerContact: client?.contactPhone, price: row.price, businessDate: row.businessDate,
+      customerContact: client?.contactPhone, price: row.price, quantity: row.quantity, businessDate: row.businessDate,
       validUntil: row.validUntil, customerNotes: row.customerNotes });
     const filename = `${row.code.replace(/[^A-Za-z0-9_-]/g, "")}-R${row.revisionNumber}.pdf`;
     return new Response(new Uint8Array(bytes), { headers: { "Content-Type": "application/pdf",

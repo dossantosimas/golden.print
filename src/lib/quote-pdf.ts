@@ -8,7 +8,7 @@ import fontkit from "@pdf-lib/fontkit";
 export type CommercialQuote = {
   code: string; revisionNumber: number; status: string; projectName: string;
   description: string; customerName: string; customerContact?: string;
-  price: string; businessDate: string; validUntil?: string | null; customerNotes?: string | null;
+  quantity?: number; price: string; businessDate: string; validUntil?: string | null; customerNotes?: string | null;
 };
 
 function lines(text: string, font: PDFFont, size: number, width: number) {
@@ -102,6 +102,8 @@ export async function renderCommercialQuote(data: CommercialQuote) {
   projectLines.forEach((line,index)=>text(line,left+14,y-34-index*17,12));
   right(amount+" COP",width-left-14,y-36,11);
   y-=projectHeight+16;
+  const quantity=data.quantity??1;
+  paragraph("CANTIDAD Y PRECIO UNITARIO",`${quantity} ${quantity===1?"pieza":"piezas"} · Precio por pieza: $ ${new Intl.NumberFormat("es-CO").format(BigInt(data.price)/BigInt(quantity))} COP`);
   if(data.description)paragraph("DESCRIPCIÓN DEL PROYECTO",data.description);
   if(data.customerNotes)paragraph("OBSERVACIONES Y CONDICIONES ACORDADAS",data.customerNotes,pale);
   ensure(148);

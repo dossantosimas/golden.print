@@ -104,6 +104,7 @@ export const quotes = pgTable("quote", {
   foreignKey({ name: "quote_customer_fk", columns: [t.orgId, t.customerId], foreignColumns: [customers.orgId, customers.id] }).onDelete("restrict"),
   foreignKey({ name: "quote_current_revision_fk", columns: [t.orgId, t.id, t.currentRevisionId], foreignColumns: [quoteRevisions.orgId, quoteRevisions.quoteId, quoteRevisions.id] }).onDelete("restrict")]);
 export const quoteRevisions = pgTable("quote_revision", {
+  quantity: integer("quantity").default(1).notNull(),
   ...business(), quoteId: uuid("quote_id").notNull(), revisionNumber: integer("revision_number").notNull(),
   status: text("status").default("draft").notNull(), projectName: text("project_name").notNull(), description: text("description").notNull(),
   clientSnapshot: jsonb("client_snapshot"), printSeconds: bigint("print_seconds", { mode: "bigint" }).notNull(),
@@ -117,6 +118,7 @@ export const quoteRevisions = pgTable("quote_revision", {
   foreignKey({ name: "revision_quote_fk", columns: [t.orgId, t.quoteId], foreignColumns: [quotes.orgId, quotes.id] }).onDelete("restrict"),
   foreignKey({ name: "revision_selected_option_fk", columns: [t.orgId, t.id, t.selectedOptionId], foreignColumns: [quotePriceOptions.orgId, quotePriceOptions.revisionId, quotePriceOptions.id] }).onDelete("restrict"),
   check("revision_status_ck", sql`${t.status} in ('draft','sent','accepted','rejected','superseded')`),
+  check("revision_quantity_ck", sql`${t.quantity} between 1 and 10000`),
   check("revision_values_ck", sql`${t.printSeconds} >= 0 and ${t.revisionNumber} > 0 and ${t.materialCost} >= 0 and ${t.energyCost} >= 0 and ${t.machineCost} >= 0 and ${t.contingencyCost} >= 0 and ${t.postprocessCost} >= 0 and ${t.estimatedCost} >= 0 and (${t.quotedPrice} is null or ${t.quotedPrice} >= 0)`)]);
 export const quoteMaterials = pgTable("quote_material", {
   ...business(), revisionId: uuid("revision_id").notNull(), filamentId: uuid("filament_id").notNull(), filamentSnapshot: jsonb("filament_snapshot").notNull(),

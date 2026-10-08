@@ -859,3 +859,5 @@
 
 .finance-comparison [data-slot=card-content]>div>dl{grid-template-columns:repeat(5,minmax(0,1fr))}
 @media(max-width:600px){.finance-comparison [data-slot=card-content]>div>dl{grid-template-columns:repeat(2,minmax(0,1fr))}.finance-comparison [data-slot=chart]{height:260px}}
+
+.quote-quantity-summary{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 0;border-top:1px solid var(--border);font-size:12px;color:var(--text-secondary)}.quote-quantity-summary strong{color:var(--text-primary)}

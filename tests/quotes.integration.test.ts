@@ -120,6 +120,20 @@ beforeAll(async () => { await migrate(db, { migrationsFolder: "./drizzle" }); })
 afterAll(async () => { await pool.end(); });
 
 describe("real persisted quote contracts", () => {
+  it("guarda dos piezas, duplica sin multiplicar dos veces y convierte con totales",async()=>rolledBack(async(tx,ctx)=>{
+    const raw={...input(),quantity:2,manualPrice:"20000"};
+    const quoteId=(await executeQuoteCommand("quotes.createDraft",raw,ctx,tx)).id;
+    const [revision]=await tx.select().from(s.quoteRevisions).where(eq(s.quoteRevisions.quoteId,quoteId));
+    expect(revision.quantity).toBe(2);expect(revision.printSeconds).toBe(10860n);expect(revision.quotedPrice).toBe("40000");
+    const [line]=await tx.select().from(s.quoteMaterials).where(eq(s.quoteMaterials.revisionId,revision.id));expect(line.grams).toBe("200.000000");
+    const copyId=(await executeQuoteCommand("quotes.duplicate",{quoteId,expectedVersion:1,idempotencyKey:randomUUID()},ctx,tx)).id;
+    const [copy]=await tx.select().from(s.quoteRevisions).where(eq(s.quoteRevisions.quoteId,copyId));
+    expect(copy.quantity).toBe(2);expect(copy.printSeconds).toBe(revision.printSeconds);expect(copy.quotedPrice).toBe(revision.quotedPrice);
+    await executeQuoteCommand("quotes.publish",{quoteId,expectedVersion:1,idempotencyKey:randomUUID()},ctx,tx);
+    await executeQuoteCommand("quotes.accept",{quoteId,expectedVersion:2,idempotencyKey:randomUUID()},ctx,tx);
+    const orderId=(await executeQuoteCommand("orders.convertQuote",{quoteId,expectedVersion:3,idempotencyKey:randomUUID()},ctx,tx)).id;
+    const [order]=await tx.select().from(s.orders).where(eq(s.orders.id,orderId));expect(order.agreedPrice).toBe("40000");expect(order.acceptedRevisionId).toBe(revision.id);
+  }));
   it("duplica para cambiar filamentos y elimina del listado sin alterar el pedido original",async()=>rolledBack(async(tx,ctx)=>{
     const {quoteId,orderId}=await confirmedOrder(tx,ctx);
     const [source]=await tx.select().from(s.quotes).where(eq(s.quotes.id,quoteId));
