@@ -856,3 +856,6 @@
 @media(max-width:720px){.order-delivery-grid:has(.order-close-panel){grid-template-columns:1fr}}
 
 .workspace-content [data-slot=badge][data-status=closed]{color:#6b21a8;background:#f1eafa;border-color:#d8b9ed}
+
+.finance-comparison [data-slot=card-content]>div>dl{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media(max-width:600px){.finance-comparison [data-slot=card-content]>div>dl{grid-template-columns:repeat(2,minmax(0,1fr))}.finance-comparison [data-slot=chart]{height:260px}}
