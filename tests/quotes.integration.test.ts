@@ -41,6 +41,23 @@ async function confirmedOrder(tx: DbTransaction, ctx: AccessContext) {
 }
 
 describe("ajustes comerciales del pedido",()=>{
+  it("el administrador elimina pedidos cerrados conservando pagos, cotización y motivo",async()=>rolledBack(async(tx,ctx)=>{
+    const {quoteId,orderId}=await confirmedOrder(tx,ctx);
+    const [before]=await tx.select().from(s.orders).where(eq(s.orders.id,orderId));
+    const [payment]=await tx.insert(s.payments).values({orgId:ctx.organizationId,createdBy:ctx.userId,actorId:ctx.userId,orderId,amount:before.agreedPrice!,paymentDate:"2026-10-04",idempotencyKey:randomUUID()}).returning();
+    await tx.update(s.orders).set({status:"closed",deliveredAt:new Date(),closedAt:new Date()}).where(eq(s.orders.id,orderId));
+    const payload={orderId,expectedVersion:1,reason:"Pedido duplicado",idempotencyKey:randomUUID()};
+    await expect(executeQuoteCommand("orders.archive",payload,{...ctx,role:"operator"},tx)).rejects.toMatchObject({code:"FORBIDDEN"});
+    await expect(executeQuoteCommand("orders.archive",{...payload,expectedVersion:2},ctx,tx)).rejects.toMatchObject({code:"VERSION_CONFLICT"});
+    await executeQuoteCommand("orders.archive",payload,ctx,tx);
+    const [removed]=await tx.select().from(s.orders).where(eq(s.orders.id,orderId));
+    expect(removed.archivedAt).not.toBeNull();expect(removed.version).toBe(2);
+    const [preserved]=await tx.select().from(s.payments).where(eq(s.payments.id,payment.id));expect(preserved).toEqual(payment);
+    const [quote]=await tx.select().from(s.quotes).where(eq(s.quotes.id,quoteId));expect(quote.archivedAt).toBeNull();
+    const [audit]=await tx.select().from(s.auditEvents).where(and(eq(s.auditEvents.entityId,orderId),eq(s.auditEvents.action,"orders.archive")));
+    expect(audit.metadata).toMatchObject({reason:"Pedido duplicado",code:before.code,status:"closed"});
+    await expect(executeQuoteCommand("orders.updateMetadata",{orderId,expectedVersion:2,title:"Cambio",idempotencyKey:randomUUID()},ctx,tx)).rejects.toMatchObject({code:"NOT_FOUND"});
+  }));
   it("reintenta la misma solicitud sin duplicar, y crea otra con una solicitud nueva",async()=>rolledBack(async(tx,ctx)=>{
     const {quoteId,orderId}=await confirmedOrder(tx,ctx);
     await tx.insert(s.session).values({id:ctx.sessionId,userId:ctx.userId,token:randomUUID(),expiresAt:new Date(Date.now()+60000)});

@@ -48,7 +48,7 @@ const scoped = (table: { orgId: AnyPgColumn; id: AnyPgColumn }, ctx: Context, en
 
 async function lockOrder(tx: DbTransaction, ctx: Context, orderId: string) {
   const [order] = await tx.select().from(orders).where(scoped(orders, ctx, orderId)).for("update");
-  if (!order) fail("NOT_FOUND", "Pedido no encontrado.");
+  if (!order || order.archivedAt) fail("NOT_FOUND", "Pedido no encontrado.");
   if (order.closedAt) fail("ORDER_CLOSED", "El pedido está cerrado y no admite modificaciones.");
   if (!order.confirmedAt) fail("INVALID_TRANSITION", "Primero vincula una cotización aceptada al pedido.");
   return order;

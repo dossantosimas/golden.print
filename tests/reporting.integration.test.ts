@@ -162,10 +162,10 @@ describe("real PostgreSQL reporting financial oracles", () => {
     const delivered=await order("1000"),ready=await order("2000",null),printing=await order("5000",null),archived=await order("3000",null);
     await getDb().update(s.orders).set({status:"finished"}).where(eq(s.orders.id,ready));
     await getDb().update(s.orders).set({status:"printing"}).where(eq(s.orders.id,printing));
-    await getDb().update(s.orders).set({archivedAt:new Date()}).where(eq(s.orders.id,archived));
     const n=sequence++;
     await getDb().insert(s.orders).values({...base(),sequenceNumber:n,code:`PED-${n}`,customerId,title:"Intake",orderDate:"2026-09-01"});
     await payment(delivered,"400");await payment(ready,"500");await payment(printing,"1000");await payment(archived,"100");
+    await getDb().update(s.orders).set({archivedAt:new Date()}).where(eq(s.orders.id,archived));
     const result=await getWorkspaceData("orders","","printing",{limit:1,page:1});
     expect(result.total).toBe(1);expect(result.items[0].id).toBe(printing);
     expect(result.metrics).toMatchObject({active:3,printing:1,finished:1,activeValue:"7000",balance:"6100"});
@@ -249,9 +249,9 @@ describe("real PostgreSQL reporting financial oracles", () => {
     await order("100",undefined,undefined,"120"); await expense("10");
     expect((await report()).metrics).toMatchObject({ netProfit: "-30.000000", breakEven: null, breakEvenProgress: null });
   });
-  it("retains archived commercial evidence and has zero target without fixed costs", async () => {
+  it("excludes removed orders from operational counts, sales and product costs", async () => {
     const delivered = await order("1000",undefined,undefined,"400");
     await getDb().update(s.orders).set({ archivedAt: new Date() }).where(eq(s.orders.id, delivered));
-    expect((await report()).metrics).toMatchObject({ sales: "1000.000000", directCosts: "400.000000", breakEven: "0.000000", breakEvenProgress: null });
+    expect((await report()).metrics).toMatchObject({ totalOrders:0, sales: "0.000000", directCosts: "0.000000", breakEven: null, breakEvenProgress: null });
   });
 });

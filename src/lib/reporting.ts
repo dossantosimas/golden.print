@@ -8,12 +8,12 @@ export async function reportingData(ctx:AccessContext,filter="",includeRecords=t
  let start:string|undefined,end:string|undefined;if(filter.includes(":"))[start,end]=filter.split(":");
  const range=periodRange(start||undefined,end||undefined),pool=getPool();
  const values=[ctx.organizationId,range.startDate??null,range.endDate,range.start?.toISOString()??null,range.end.toISOString()];
- const operational=await pool.query(`SELECT status,count(*)::int n FROM "order" WHERE org_id=$1 AND ($2::date IS NULL OR order_date >= $2::date) AND order_date <= $3::date GROUP BY status`,values.slice(0,3));
+ const operational=await pool.query(`SELECT status,count(*)::int n FROM "order" WHERE org_id=$1 AND archived_at IS NULL AND ($2::date IS NULL OR order_date >= $2::date) AND order_date <= $3::date GROUP BY status`,values.slice(0,3));
  const counts:Record<string,number>=Object.fromEntries(["not_started","printing","finished","delivered","closed","damaged"].map(k=>[k,0]));for(const row of operational.rows)counts[row.status]=row.n;
  const total=Object.values(counts).reduce((a,b)=>a+b,0);
  if(ctx.role!=="administrator")return {items:[],total,metrics:{totalOrders:total,...counts},access:ctx,basis:"order_date_current_status"};
  // PostgreSQL NUMERIC aggregates preserve exact amounts without loading every financial row.
- const cte=`WITH os AS (SELECT * FROM "order" WHERE org_id=$1),
+ const cte=`WITH os AS (SELECT * FROM "order" WHERE org_id=$1 AND archived_at IS NULL),
  cohort AS (SELECT o.*,COALESCE(o.estimated_cost_override,r.estimated_cost,0) product_cost,
  CASE WHEN r.estimated_cost > 0 THEN COALESCE(o.estimated_cost_override,r.estimated_cost)*(r.material_cost+r.energy_cost+r.postprocess_cost)/r.estimated_cost
  ELSE COALESCE(o.estimated_cost_override,0) END variable_product_cost

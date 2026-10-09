@@ -152,11 +152,12 @@ export async function executeQuoteCommand(command: string, raw: Record<string, u
     return result(order.id,"orders");
   }
   if (["orders.updateMetadata", "orders.archive", "orders.deleteUnusedIntake"].includes(command)) {
+    if(operation === "archive" && ctx.role !== "administrator") throw new AccessError("FORBIDDEN", "Solo el administrador puede eliminar pedidos.");
     const base = key.extend({ orderId: z.uuid(), expectedVersion: z.coerce.number().int().positive() });
     const data = base.parse(raw);
     const [order] = await tx.select().from(orders).where(and(eq(orders.orgId, ctx.organizationId), eq(orders.id, data.orderId))).for("update");
-    if (!order) throw new AccessError("NOT_FOUND", "Pedido no encontrado.");
-    if (order.closedAt) throw new AccessError("ORDER_CLOSED", "El pedido está cerrado y no admite modificaciones.");
+    if (!order || order.archivedAt) throw new AccessError("NOT_FOUND", "Pedido no encontrado.");
+    if (order.closedAt && operation !== "archive") throw new AccessError("ORDER_CLOSED", "El pedido está cerrado y no admite modificaciones.");
     if (order.version !== data.expectedVersion) throw new AccessError("VERSION_CONFLICT", "El pedido cambió; recarga antes de editar.");
     if (operation === "updateMetadata") {
       const metadata = base.extend({ title: z.string().trim().min(1).max(200), notes: z.string().max(5000).optional(),
@@ -165,8 +166,10 @@ export async function executeQuoteCommand(command: string, raw: Record<string, u
       await tx.update(orders).set({ title: metadata.title, notes: metadata.notes,
         promisedDeliveryDate: metadata.promisedDeliveryDate, version: order.version + 1, updatedAt: new Date() }).where(eq(orders.id, order.id));
     } else if (operation === "archive") {
-      base.strict().parse(raw);
+      const {reason}=base.extend({reason:z.string().trim().min(1).max(5000)}).strict().parse(raw);
       await tx.update(orders).set({ archivedAt: new Date(), version: order.version + 1, updatedAt: new Date() }).where(eq(orders.id, order.id));
+      await audit(tx,ctx,command,order.id,{reason,code:order.code,status:order.status});
+      return result(order.id,"orders");
     } else {
       base.strict().parse(raw);
       if (order.confirmedAt || order.status !== "not_started") throw new AccessError("DEPENDENCY_CONFLICT", "Solo un pedido provisional sin actividad puede eliminarse.");
