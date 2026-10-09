@@ -98,8 +98,6 @@ async function convert(tx: DbTransaction, ctx: AccessContext, quote: typeof quot
   const [client] = await tx.select({ id: customers.id }).from(customers).where(and(eq(customers.orgId, ctx.organizationId),
     eq(customers.id, clientId), isNull(customers.archivedAt))).limit(1);
   if (!client) throw new AccessError("NOT_FOUND", "Cliente no encontrado o archivado.");
-  const [existing] = await tx.select().from(orders).where(and(eq(orders.orgId, ctx.organizationId), eq(orders.sourceQuoteId, quote.id), eq(orders.customerId, clientId))).limit(1);
-  if (existing) {if(existingIntakeId&&existing.id!==existingIntakeId)throw new AccessError("DEPENDENCY_CONFLICT","Esta cotización ya está vinculada a otro pedido de este cliente.");return result(existing.id, "orders");}
   let orderId: string;
   if (existingIntakeId) {
     const [intake] = await tx.select().from(orders).where(and(eq(orders.orgId, ctx.organizationId), eq(orders.id, existingIntakeId))).for("update");

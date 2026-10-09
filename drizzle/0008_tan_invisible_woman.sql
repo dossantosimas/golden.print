@@ -1,0 +1,2 @@
+ALTER TABLE "order" DROP CONSTRAINT "order_source_quote_customer_uq";--> statement-breakpoint
+CREATE INDEX "order_source_quote_customer_idx" ON "order" USING btree ("org_id","source_quote_id","customer_id");

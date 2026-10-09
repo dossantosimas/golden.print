@@ -10,6 +10,7 @@ import * as s from "../src/lib/db/schema";
 import type { DbTransaction } from "../src/lib/db";
 import type { AccessContext } from "../src/lib/access";
 import { executeQuoteCommand } from "../src/lib/quote-service";
+import { mutate } from "../src/lib/mutations";
 import { defaultFormula } from "../src/lib/finance";
 import { renderCommercialQuote } from "../src/lib/quote-pdf";
 import * as pdfModule from "../src/lib/quote-pdf";
@@ -40,6 +41,23 @@ async function confirmedOrder(tx: DbTransaction, ctx: AccessContext) {
 }
 
 describe("ajustes comerciales del pedido",()=>{
+  it("reintenta la misma solicitud sin duplicar, y crea otra con una solicitud nueva",async()=>rolledBack(async(tx,ctx)=>{
+    const {quoteId,orderId}=await confirmedOrder(tx,ctx);
+    await tx.insert(s.session).values({id:ctx.sessionId,userId:ctx.userId,token:randomUUID(),expiresAt:new Date(Date.now()+60000)});
+    pdfDb=tx;
+    try {
+      const payload={quoteId,expectedVersion:3,idempotencyKey:randomUUID()};
+      const create=(input:typeof payload)=>mutate("orders.convertQuote",input,ctx,nested=>executeQuoteCommand("orders.convertQuote",input,ctx,nested));
+      const first=await create(payload),retry=await create(payload);
+      expect(first.id).not.toBe(orderId);
+      expect(retry.id).toBe(first.id);
+      expect(retry.replayed).toBe(true);
+      const next=await create({...payload,idempotencyKey:randomUUID()});
+      expect(next.id).not.toBe(first.id);
+      const rows=await tx.select().from(s.orders).where(eq(s.orders.sourceQuoteId,quoteId));
+      expect(rows).toHaveLength(3);
+    } finally {pdfDb=db;}
+  }));
   it("crea otro pedido para otro cliente con la misma revisión aceptada",async()=>rolledBack(async(tx,ctx)=>{
     const {quoteId,orderId}=await confirmedOrder(tx,ctx);
     const customerId=randomUUID();
@@ -54,8 +72,10 @@ describe("ajustes comerciales del pedido",()=>{
     expect(second.agreedPrice).toBe(original.agreedPrice);
     const [preserved]=await tx.select().from(s.orders).where(eq(s.orders.id,orderId));
     expect(preserved).toEqual(original);
-    const retry=await executeQuoteCommand("orders.convertQuote",{quoteId,expectedVersion:3,customerId,idempotencyKey:randomUUID()},ctx,tx);
-    expect(retry.id).toBe(created.id);
+    const repeat=await executeQuoteCommand("orders.convertQuote",{quoteId,expectedVersion:3,customerId,idempotencyKey:randomUUID()},ctx,tx);
+    expect(repeat.id).not.toBe(created.id);
+    const originalCustomerRepeat=await executeQuoteCommand("orders.convertQuote",{quoteId,expectedVersion:3,idempotencyKey:randomUUID()},ctx,tx);
+    expect(originalCustomerRepeat.id).not.toBe(orderId);
   }));
   it("conserva la cotización, registra motivo y actualiza precio y costo estimado",async()=>rolledBack(async(tx,ctx)=>{
     const {quoteId,orderId}=await confirmedOrder(tx,ctx);
@@ -77,10 +97,13 @@ describe("ajustes comerciales del pedido",()=>{
     const provisional=(await executeQuoteCommand("orders.createIntake",{customerId:fixtureIds.customer,title:"Provisional",orderDate:"2026-10-04",idempotencyKey:randomUUID()},ctx,tx)).id;
     await expect(executeQuoteCommand("orders.updateCommercial",{...payload,orderId:provisional},ctx,tx)).rejects.toMatchObject({code:"INVALID_TRANSITION"});
   }));
-  it("no vincula a un segundo pedido una cotización utilizada",async()=>rolledBack(async(tx,ctx)=>{
+  it("vincula una cotización utilizada a otro pedido provisional del mismo cliente",async()=>rolledBack(async(tx,ctx)=>{
     const {quoteId}=await confirmedOrder(tx,ctx);
     const provisional=(await executeQuoteCommand("orders.createIntake",{customerId:fixtureIds.customer,title:"Otro pedido",orderDate:"2026-10-04",idempotencyKey:randomUUID()},ctx,tx)).id;
-    await expect(executeQuoteCommand("orders.convertQuote",{quoteId,expectedVersion:3,existingIntakeId:provisional,idempotencyKey:randomUUID()},ctx,tx)).rejects.toMatchObject({code:"DEPENDENCY_CONFLICT"});
+    const linked=await executeQuoteCommand("orders.convertQuote",{quoteId,expectedVersion:3,existingIntakeId:provisional,idempotencyKey:randomUUID()},ctx,tx);
+    expect(linked.id).toBe(provisional);
+    const [order]=await tx.select().from(s.orders).where(eq(s.orders.id,provisional));
+    expect(order.sourceQuoteId).toBe(quoteId);
   }));
 });
 const fixtureIds = { actor: randomUUID(), member: randomUUID(), customer: randomUUID(), filament: randomUUID() };
@@ -232,7 +255,7 @@ describe("real persisted quote contracts", () => {
     });
   });
 
-  it("concurrent conversion commands return one order for the same source", async () => {
+  it("independent concurrent conversion commands create separate orders for the same source and customer", async () => {
     // Commit this private fixture so independent connections can observe row locks.
     // Only its IDs are deleted afterwards; all other test data is preserved.
     let quoteId = "";
@@ -249,9 +272,9 @@ describe("real persisted quote contracts", () => {
       const command = { quoteId, customerId: fixtureIds.customer, expectedVersion: 3 };
       const converted = await Promise.all([db.transaction((tx) => executeQuoteCommand("orders.convertQuote", { ...command, idempotencyKey: randomUUID() }, ctx, tx)),
         db.transaction((tx) => executeQuoteCommand("orders.convertQuote", { ...command, idempotencyKey: randomUUID() }, ctx, tx))]);
-      expect(converted[0].id).toBe(converted[1].id);
+      expect(converted[0].id).not.toBe(converted[1].id);
       const created = await db.select().from(s.orders).where(eq(s.orders.sourceQuoteId, quoteId));
-      expect(created).toHaveLength(1); expect(created[0].agreedPrice).toBe("30164");
+      expect(created).toHaveLength(2); expect(created.every(order=>order.agreedPrice==="30164")).toBe(true);
     } finally {
       await db.transaction(async (tx) => {
         const orderRows = await tx.select({ id: s.orders.id }).from(s.orders).where(eq(s.orders.sourceQuoteId, quoteId));
