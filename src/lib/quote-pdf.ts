@@ -9,6 +9,7 @@ export type CommercialQuote = {
   code: string; revisionNumber: number; status: string; projectName: string;
   description: string; customerName: string; customerContact?: string;
   quantity?: number; price: string; businessDate: string; validUntil?: string | null; customerNotes?: string | null;
+  images?: { title: string; bytes: Uint8Array }[];
 };
 
 function lines(text: string, font: PDFFont, size: number, width: number) {
@@ -32,6 +33,7 @@ function lines(text: string, font: PDFFont, size: number, width: number) {
 }
 
 export async function renderCommercialQuote(data: CommercialQuote) {
+  if ((data.images?.length ?? 0) > 10) throw new Error("Máximo 10 imágenes por cotización.");
   const doc = await PDFDocument.create();
   doc.registerFontkit(fontkit);
   const font = await doc.embedFont(await readFile(join(process.cwd(), "public/fonts/NotoSans-Regular.ttf")), { subset: true });
@@ -121,6 +123,24 @@ export async function renderCommercialQuote(data: CommercialQuote) {
   text("GOLDEN PRINT 3D",left,totalTop-20,13,gold,titleFont);
   lines("Gracias por confiar en nuestro taller para materializar tus ideas.",font,10,bodyWidth-260).forEach((line,index)=>text(line,left,totalTop-48-index*15,10,muted));
   lines("Los detalles y condiciones acordados se describen en esta cotización.",font,8,bodyWidth-260).forEach((line,index)=>text(line,left,totalTop-95-index*12,8,muted));
+  for (const [index, asset] of (data.images ?? []).entries()) {
+    if (index % 2 === 0) {
+      addPage();
+      section("IMÁGENES DEL PROYECTO" + (index ? " (continuación)" : ""));
+    }
+    const caption = lines(asset.title || `Imagen ${index + 1}`, font, 11, bodyWidth - 28);
+    // pdf-lib's JPEG reader uses the backing ArrayBuffer from offset zero.
+    // Decoded database Buffers can be slices of Node's shared buffer pool.
+    const image = await doc.embedJpg(Uint8Array.from(asset.bytes));
+    const imageHeight = 190, captionHeight = caption.length * 15 + 20;
+    box(left, y, bodyWidth, imageHeight + captionHeight);
+    const scale = Math.min((bodyWidth - 28) / image.width, (imageHeight - 20) / image.height);
+    const drawnWidth = image.width * scale, drawnHeight = image.height * scale;
+    page.drawImage(image, { x: left + (bodyWidth - drawnWidth) / 2,
+      y: y - imageHeight + (imageHeight - drawnHeight) / 2, width: drawnWidth, height: drawnHeight });
+    caption.forEach((line, lineIndex) => text(line, left + 14, y - imageHeight - 5 - lineIndex * 15, 11));
+    y -= imageHeight + captionHeight + 18;
+  }
   doc.getPages().forEach((p,index)=>{
     p.drawLine({start:{x:left,y:56},end:{x:width-left,y:56},thickness:.7,color:border});
     p.drawText(`Golden Print 3D · ${data.code} · Revisión ${data.revisionNumber}`,{x:left,y:40,size:8,font,color:muted});

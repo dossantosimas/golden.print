@@ -1,11 +1,11 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
-import { and, eq, isNull, max } from "drizzle-orm";
+import { and, eq, isNull, max, inArray } from "drizzle-orm";
 import { z } from "zod";
 import { AccessError, type AccessContext } from "./access";
 import type { DbTransaction } from "./db";
 import { auditEvents, customers, documentCounters, filaments, orders, orderStatusEvents, productionAttempts, payments, quotes,
-  quoteMaterials, quotePostprocesses, quotePriceOptions, quoteRevisions } from "./db/schema";
+  quoteMaterials, quotePostprocesses, quotePriceOptions, quoteRevisions, quoteImageAssets } from "./db/schema";
 import { calculateQuote, D, quantize, quoteInputSchema } from "./finance";
 
 const key = z.object({ idempotencyKey: z.uuid() });
@@ -38,6 +38,10 @@ function date(value: string) {
 async function persistRevision(tx: DbTransaction, ctx: AccessContext, quoteId: string, revisionNumber: number,
   raw: z.input<typeof quoteInputSchema>, revisionId = randomUUID()) {
   const input = quoteInputSchema.parse(raw);
+  if(input.images.length){
+    const assets=await tx.select({id:quoteImageAssets.id}).from(quoteImageAssets).where(and(eq(quoteImageAssets.orgId,ctx.organizationId),inArray(quoteImageAssets.id,input.images.map(image=>image.id)))).for("share");
+    if(assets.length!==input.images.length)throw new AccessError("NOT_FOUND","Una imagen no existe o no pertenece a la empresa.");
+  }
   date(input.businessDate);
   if (input.validUntil) { date(input.validUntil); if (input.validUntil < input.businessDate) throw new AccessError("VALIDATION_ERROR", "La validez no puede ser anterior a la cotización."); }
   let clientSnapshot: Record<string, unknown> | null = null;
@@ -57,7 +61,7 @@ async function persistRevision(tx: DbTransaction, ctx: AccessContext, quoteId: s
   }
   const calculated = calculateQuote(input);
   await tx.insert(quoteRevisions).values({ id: revisionId, orgId: ctx.organizationId, createdBy: ctx.userId,
-    quoteId, revisionNumber, quantity: input.quantity, status: "draft", projectName: input.projectName, description: input.description,
+    quoteId, revisionNumber, quantity: input.quantity, images: input.images, status: "draft", projectName: input.projectName, description: input.description,
     clientSnapshot, printSeconds: BigInt(input.printSeconds)*BigInt(input.quantity), formulaSnapshot: { formulaVersion: 1, ...input.formula, inputSnapshot: input },
     materialCost: calculated.components.material, energyCost: calculated.components.energy,
     machineCost: calculated.components.machine, contingencyCost: calculated.components.contingency,

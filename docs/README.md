@@ -1,12 +1,13 @@
 # Índice de documentación
 
-Actualizado: 2026-10-09. Código de referencia: `5cb394a`.
+Actualizado: 2026-10-10. Incluye imágenes de cotización; consultar el historial Git para la entrega vigente.
 
 ## Guías vigentes
 
 | Documento | Para qué sirve |
 |---|---|
 | [USER_GUIDE](USER_GUIDE.md) | Operación diaria por módulo |
+| [QUOTE_IMAGES](QUOTE_IMAGES.md) | Carga privada, títulos y fotos en el PDF |
 | [PROJECT_STATUS](PROJECT_STATUS.md) | Estado, alcance y siguiente paso |
 | [REQUIREMENTS](REQUIREMENTS.md) | Requisitos actuales y requisitos históricos con IDs |
 | [FINANCIAL_RULES](FINANCIAL_RULES.md) | Cantidades, costos, cobros, cartera y caja |

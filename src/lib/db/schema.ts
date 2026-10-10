@@ -104,6 +104,7 @@ export const quotes = pgTable("quote", {
   foreignKey({ name: "quote_customer_fk", columns: [t.orgId, t.customerId], foreignColumns: [customers.orgId, customers.id] }).onDelete("restrict"),
   foreignKey({ name: "quote_current_revision_fk", columns: [t.orgId, t.id, t.currentRevisionId], foreignColumns: [quoteRevisions.orgId, quoteRevisions.quoteId, quoteRevisions.id] }).onDelete("restrict")]);
 export const quoteRevisions = pgTable("quote_revision", {
+  images: jsonb("images").$type<{id:string;title:string}[]>().default([]).notNull(),
   quantity: integer("quantity").default(1).notNull(),
   ...business(), quoteId: uuid("quote_id").notNull(), revisionNumber: integer("revision_number").notNull(),
   status: text("status").default("draft").notNull(), projectName: text("project_name").notNull(), description: text("description").notNull(),
@@ -234,3 +235,15 @@ export const mutationRequests = pgTable("mutation_request", {
   resultEntityType: text("result_entity_type").notNull(), resultEntityId: uuid("result_entity_id").notNull(), resultStatus: text("result_status").notNull(),
   completedAt: instant("completed_at").defaultNow().notNull(),
 }, (t) => [unique("mutation_request_key_uq").on(t.orgId, t.actorId, t.operation, t.idempotencyKey)]);
+
+// Immutable, private JPEG assets. Titles and ordering belong to the revision.
+export const quoteImageAssets = pgTable("quote_image_asset", {
+  ...business(),
+  data: text("data").notNull(),
+  width: integer("width").notNull(),
+  height: integer("height").notNull(),
+}, (t)=>[
+  index("quote_image_org_creator_date_idx").on(t.orgId,t.createdBy,t.createdAt),
+  check("quote_image_dimensions_ck",sql`${t.width} between 1 and 1600 and ${t.height} between 1 and 1600`),
+  check("quote_image_size_ck",sql`length(${t.data}) between 1 and 409600`),
+]);

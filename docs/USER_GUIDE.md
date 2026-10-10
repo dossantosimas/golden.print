@@ -1,6 +1,6 @@
 # Guía de uso
 
-Versión documental: 2026-10-09. Español, COP y fechas civiles de Colombia.
+Versión documental: 2026-10-10. Español, COP y fechas civiles de Colombia.
 
 ## Inicio
 
@@ -30,7 +30,11 @@ Puede crearse otro pedido desde la misma cotización para el mismo cliente o par
 
 Duplicar cotización crea un borrador editable para cambiar filamentos o condiciones. La aceptación no se copia. La opción Eliminar conserva evidencia mediante archivo cuando corresponde; el borrado físico se reserva a borradores sin evidencia publicada ni pedidos vinculados.
 
-El PDF contiene datos comerciales, cantidad y precio, sin costos, márgenes ni notas internas.
+En **Imágenes de la cotización**, pulsa **Agregar imágenes** para elegir fotos JPG, PNG o WebP (hasta 10). Cada miniatura permite escribir un título o quitar la imagen. Espera que finalice la carga y guarda el borrador o emite la cotización para conservarlas. También puedes agregarlas al editar un borrador o crear una nueva revisión.
+
+Duplicar conserva fotos y títulos, que pueden cambiarse en el nuevo borrador. Una revisión publicada mantiene las imágenes y títulos que tenía al emitirse.
+
+El PDF contiene datos comerciales, cantidad y precio, sin costos, márgenes ni notas internas. Las fotos y sus títulos aparecen en páginas adicionales; las imágenes sin título se identifican como Imagen 1, Imagen 2, etc.
 
 ## Pedidos, entrega y cierre
 

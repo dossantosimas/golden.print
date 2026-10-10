@@ -160,6 +160,26 @@ beforeAll(async () => { await migrate(db, { migrationsFolder: "./drizzle" }); })
 afterAll(async () => { await pool.end(); });
 
 describe("real persisted quote contracts", () => {
+  it("conserva fotos y títulos al editar, duplicar y crear otra revisión",async()=>rolledBack(async(tx,ctx)=>{
+    const [asset] = await tx.insert(s.quoteImageAssets).values({orgId:ctx.organizationId,createdBy:ctx.userId,
+      data:"YQ==",width:1,height:1}).returning();
+    const images=[{id:asset.id,title:"Vista frontal"}];
+    const quoteId=(await executeQuoteCommand("quotes.createDraft",{...input(),images},ctx,tx)).id;
+    const [first]=await tx.select().from(s.quoteRevisions).where(eq(s.quoteRevisions.quoteId,quoteId));
+    expect(first.images).toEqual(images);
+    await executeQuoteCommand("quotes.updateDraft",{...input(),images:[{id:asset.id,title:"Vista lateral"}],quoteId,expectedVersion:1},ctx,tx);
+    const [edited]=await tx.select().from(s.quoteRevisions).where(eq(s.quoteRevisions.quoteId,quoteId));
+    expect(edited.images[0].title).toBe("Vista lateral");
+    const duplicate=(await executeQuoteCommand("quotes.duplicate",{quoteId,expectedVersion:2,idempotencyKey:randomUUID()},ctx,tx)).id;
+    const [copy]=await tx.select().from(s.quoteRevisions).where(eq(s.quoteRevisions.quoteId,duplicate));
+    expect(copy.images).toEqual(edited.images);
+    await executeQuoteCommand("quotes.publish",{quoteId,expectedVersion:2,idempotencyKey:randomUUID()},ctx,tx);
+    await executeQuoteCommand("quotes.revise",{...input(),images,quoteId,expectedVersion:3},ctx,tx);
+    const history=await tx.select().from(s.quoteRevisions).where(eq(s.quoteRevisions.quoteId,quoteId));
+    expect(history).toHaveLength(2);
+    expect(history.find(r=>r.id===edited.id)?.images[0].title).toBe("Vista lateral");
+    await expect(executeQuoteCommand("quotes.createDraft",{...input(),images:[{id:randomUUID(),title:"Ajena"}]},ctx,tx)).rejects.toMatchObject({code:"NOT_FOUND"});
+  }));
   it("guarda dos piezas, duplica sin multiplicar dos veces y convierte con totales",async()=>rolledBack(async(tx,ctx)=>{
     const raw={...input(),quantity:2,manualPrice:"20000"};
     const quoteId=(await executeQuoteCommand("quotes.createDraft",raw,ctx,tx)).id;

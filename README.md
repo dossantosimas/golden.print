@@ -2,11 +2,12 @@
 
 Aplicación interna para cotizar impresión 3D y gestionar clientes, filamentos, pedidos, producción, pagos, gastos y finanzas. Interfaz en español; COP, zona `America/Bogota`, sin impuestos ni devoluciones.
 
-Documentación actualizada el **2026-10-09**, contrastada con el código del commit `5cb394a`. Producción conocida: [Golden Print](https://golden-print-3d.vercel.app). Esta actualización documental no ejecuta un nuevo despliegue ni certifica los datos actuales de la base.
+Documentación actualizada el **2026-10-10**. Producción: [Golden Print](https://golden-print-3d.vercel.app). La trazabilidad y el alcance de las comprobaciones se describen en [VALIDATION_REPORT](docs/VALIDATION_REPORT.md).
 
 ## Funcionamiento actual
 
 - Una cotización aceptada puede crear tantos pedidos como se necesiten, para el mismo cliente o distintos clientes.
+- Hasta 10 imágenes por cotización, cada una con título editable; se conservan en revisiones/duplicados y aparecen en el PDF. Ver [imágenes](docs/QUOTE_IMAGES.md).
 - Cantidad de piezas: gramos, tiempo, postprocesado y precio manual se ingresan por pieza; el cotizador multiplica por cantidad.
 - El costo del producto es el de la revisión aceptada, o su ajuste explícito en el pedido. No se exige registrar otro costo real.
 - Los abonos reducen el saldo; el pedido solo puede cerrarse después de entregarlo y pagarlo completamente.

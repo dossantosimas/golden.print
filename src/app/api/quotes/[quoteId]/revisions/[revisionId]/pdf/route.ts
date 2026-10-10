@@ -5,6 +5,7 @@ import { AccessError, requireAccess } from "@/lib/access";
 import { getDb } from "@/lib/db";
 import { quotes, quoteRevisions } from "@/lib/db/schema";
 import { renderCommercialQuote } from "@/lib/quote-pdf";
+import { commercialQuoteImages } from "@/lib/quote-image-service";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,7 +20,7 @@ export async function GET(_request: Request, context: { params: Promise<{ quoteI
       status: quoteRevisions.status, projectName: quoteRevisions.projectName, description: quoteRevisions.description,
       clientSnapshot: quoteRevisions.clientSnapshot, price: quoteRevisions.quotedPrice, quantity: quoteRevisions.quantity,
       businessDate: quoteRevisions.businessDate, validUntil: quoteRevisions.validUntil,
-      customerNotes: quoteRevisions.customerNotes }).from(quoteRevisions)
+      customerNotes: quoteRevisions.customerNotes, images: quoteRevisions.images }).from(quoteRevisions)
       .innerJoin(quotes, and(eq(quotes.id, quoteRevisions.quoteId), eq(quotes.orgId, quoteRevisions.orgId)))
       .where(and(eq(quoteRevisions.orgId, access.organizationId), eq(quoteRevisions.quoteId, params.quoteId),
         eq(quoteRevisions.id, params.revisionId))).limit(1);
@@ -30,7 +31,8 @@ export async function GET(_request: Request, context: { params: Promise<{ quoteI
     const bytes = await renderCommercialQuote({ code: row.code, revisionNumber: row.revisionNumber, status: row.status,
       projectName: row.projectName, description: row.description, customerName: client?.name ?? "Sin cliente",
       customerContact: client?.contactPhone, price: row.price, quantity: row.quantity, businessDate: row.businessDate,
-      validUntil: row.validUntil, customerNotes: row.customerNotes });
+      validUntil: row.validUntil, customerNotes: row.customerNotes,
+      images: await commercialQuoteImages(access.organizationId, row.images) });
     const filename = `${row.code.replace(/[^A-Za-z0-9_-]/g, "")}-R${row.revisionNumber}.pdf`;
     return new Response(new Uint8Array(bytes), { headers: { "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="${filename}"`, "Cache-Control": "private, no-store", "X-Request-Id": requestId } });

@@ -1,3 +1,19 @@
+## Imágenes de cotización — 2026-10-10
+
+- PASS: typecheck y build Next.js, incluyendo rutas de carga y lectura privada.
+- PASS: 21 pruebas unitarias en 5 archivos: reglas comerciales existentes, límite de diez imágenes, referencias únicas, títulos, normalización de PNG a JPEG y PDF de diez fotos.
+- PASS: prueba PostgreSQL en una transacción revertida: carga idempotente, lectura por organización, edición de títulos, duplicado, conservación de revisión publicada, rechazo de referencias ajenas y PDF HTTP de seis páginas. No quedaron cotizaciones ni movimientos comerciales de prueba.
+- PASS: navegador Edge con diez cargas reales, miniaturas privadas, título Unicode, límite, quitar imagen, escritorio 1440px y celular 390px sin desbordamiento; origen externo rechazado. Archivos, registros de prueba y sesión temporal eliminados.
+- PASS: seis páginas del PDF renderizadas e inspeccionadas; referencias horizontales/verticales mantienen proporciones y títulos largos no invaden el pie.
+- PASS: filtros de cotizaciones conservan el documento y no generan recarga completa.
+- PASS: ESLint sin errores, con 25 advertencias existentes.
+- PASS: migración 0009 aplicada y columna de imágenes verificada en Neon.
+- Límite: la suite completa de integración local no se ejecutó porque PostgreSQL/Docker no estaba disponible; la prueba de persistencia indicada fue acotada y se revirtió.
+
+La publicación debe verificarse por SHA/estado READY y alias de producción; la evidencia de despliegue se conserva en el registro de Vercel.
+
+---
+
 > Actualización documental 2026-10-09: se contrastaron guías con código, configuración, migraciones y commits hasta 5cb394a, y se comprobaron los enlaces de la nueva documentación. No se repitieron typecheck, lint, suites, build ni verificación de producción en esta tarea. Los resultados inferiores conservan su fecha y alcance; no se extrapolan a todos los cambios posteriores. Pendientes en [IMPROVEMENTS](IMPROVEMENTS.md).
 
 ## Verificación de documentación — 2026-10-09

@@ -22,3 +22,7 @@ Actualizado 2026-10-09 desde el historial Git local. Las referencias indican imp
 Se sincronizaron guías de uso, estado, finanzas, arquitectura, datos, contratos, operación y requisitos vigentes. Se preservaron documentos reemplazados y planes históricos. Se comprobaron enlaces, comandos, migraciones y ejemplos del calculador. No se cambió código de aplicación ni se ejecutaron correcciones de datos o despliegues como parte de esta actualización.
 
 Para futuras entregas registrar commit, pruebas ejecutadas/resultados, entorno, ID/URL del despliegue y limitaciones. Las correcciones de datos se documentan privadamente sin PII en el changelog.
+
+## Imágenes de cotización — 2026-10-10
+
+Hasta 10 fotos privadas por revisión, cada una con título editable, miniatura y opción de quitar. Las imágenes se conservan en edición/duplicado y se incluyen en el PDF comercial con paginación. Migración 0009, dependencia Sharp fijada y validación de acceso/límites en servidor. Pruebas y restricciones en [VALIDATION_REPORT](VALIDATION_REPORT.md); diseño y mantenimiento en [QUOTE_IMAGES](QUOTE_IMAGES.md).

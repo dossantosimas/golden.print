@@ -53,3 +53,9 @@ Auth permite rutas explícitas para login/logout/sesión y operaciones propias; 
 PDF exige acceso y relación correcta entre cotización/revisión. Usa datos comerciales guardados y recursos locales; no incluye fórmula, costos ni notas internas.
 
 Errores relevantes: `UNAUTHENTICATED`, `FORBIDDEN`, `VALIDATION_ERROR`, `NOT_FOUND`, `VERSION_CONFLICT`, `IDEMPOTENCY_CONFLICT`, `INVALID_TRANSITION`, `ORDER_CLOSED`, `PAYMENT_PENDING`, `PAYMENT_EXCEEDS_BALANCE`. No asumir que el mensaje del navegador implica rollback de una petición cuyo resultado no pudo recibirse: reintentar con la misma identidad de operación.
+
+## Carga de imágenes — 2026-10-10
+
+`POST /api/quote-images` recibe multipart `image` y `idempotencyKey` UUID. Requiere sesión/membresía activa, origen propio, imagen JPEG/PNG/WebP válida y máximo 2 MiB de entrada optimizada. Devuelve `{ok:true,id}`. La carga usa idempotencia y un límite de 100 archivos por usuario/hora.
+
+`GET /api/quote-images/[id]` devuelve JPEG privado solo para la organización autorizada, con `Cache-Control: private, no-store`. No recibe URLs externas. Los comandos de cotización aceptan `images:[{id,title}]`, máximo 10 referencias únicas y títulos de hasta 120 caracteres, verificando organización en servidor. El PDF resuelve las imágenes de la revisión pedida, no las de la revisión actual por defecto.

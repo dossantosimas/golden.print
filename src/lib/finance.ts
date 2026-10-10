@@ -1,5 +1,6 @@
 import Decimal from "decimal.js";
 import { z } from "zod";
+import {quoteImagesSchema} from "./quote-images";
 export const D = Decimal.clone({ precision: 80, rounding: Decimal.ROUND_HALF_UP });
 const dec = z.string().regex(/^(0|[1-9]\d{0,11})(\.\d{1,6})?$/, "Usa un decimal positivo con hasta seis decimales.");
 const factor = dec.refine(v=>new D(v).lte("999999"),"Factor fuera de rango.");
@@ -7,6 +8,7 @@ export const defaultFormula = {powerKw:"0.15",energyRate:"1100",machineRate:"200
 export const formulaSchema=z.object({powerKw:factor,energyRate:dec,machineRate:dec,contingencyRate:factor.refine(v=>new D(v).lte(1)),multipliers:z.array(factor.refine(v=>new D(v).gt(0))).length(3)}).strict().refine(v=>new D(v.multipliers[0]).lte(v.multipliers[1])&&new D(v.multipliers[1]).lte(v.multipliers[2]),"Multiplicadores deben estar ordenados.");
 export const quoteInputSchema = z.object({
  quantity:z.number().int().min(1).max(10000).default(1),
+ images:quoteImagesSchema.default([]),
  projectName:z.string().trim().min(1).max(200), customerId:z.string().uuid().optional(),description:z.string().max(5000).default(""),
  printSeconds:z.string().regex(/^(0|[1-9]\d{0,11})$/),
  materials:z.array(z.object({filamentId:z.string().uuid(),grams:dec.refine(v=>new D(v).gt(0)),pricePerGram:dec}).strict()).min(1).max(100),

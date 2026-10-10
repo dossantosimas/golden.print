@@ -9,7 +9,7 @@ Actualizado 2026-10-09. Fuente: [schema.ts](../src/lib/db/schema.ts) y [migracio
 | Acceso | `user`, `session`, `account`, `verification`, `rate_limit` | Better Auth y límites de peticiones |
 | Empresa | `organization`, `membership`, `business_settings`, `document_counter` | Empresa, roles, fórmula y consecutivos |
 | Catálogo | `customer`, `filament` | Contactos y rollos, con archivo |
-| Cotización | `quote`, `quote_revision`, `quote_material`, `quote_postprocess`, `quote_price_option` | Revisiones, snapshots, cantidad y totales |
+| Cotización | `quote`, `quote_revision`, `quote_material`, `quote_postprocess`, `quote_price_option`, `quote_image_asset` | Revisiones, snapshots, cantidad, fotos y totales |
 | Pedido | `order`, `order_status_event`, `production_attempt` | Compra, evolución y reimpresión |
 | Finanzas | `payment`, `expense`, `independent_loss`, `cash_movement` | Cobros, egresos y orígenes |
 | Historial | `direct_cost`, `audit_event`, `mutation_request` | Costos históricos, auditoría e idempotencia |
@@ -46,3 +46,7 @@ Las migraciones anteriores y snapshots permanecen en `drizzle/`. Tener el archiv
 ## Operación y límites
 
 Usar bases separadas para desarrollo, pruebas y producción. No ejecutar fixtures destructivos en Neon del negocio. Respaldo/restauración, rol runtime mínimo y aislamiento de previews necesitan verificación explícita; consultar [OPERATIONS](OPERATIONS.md).
+
+## Imágenes de cotización — 2026-10-10
+
+Migración 0009: `quote_image_asset` conserva JPEG privados optimizados, dimensiones y autor/organización. `quote_revision.images` guarda hasta 10 referencias ordenadas y sus títulos; también se conservan en `formula_snapshot.inputSnapshot`. Los duplicados comparten archivos inmutables, con títulos independientes por revisión. Ver [QUOTE_IMAGES](QUOTE_IMAGES.md).
