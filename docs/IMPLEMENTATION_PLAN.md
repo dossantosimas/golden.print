@@ -1,3 +1,5 @@
+> Nota de vigencia (2026-10-09): documento de diseño o evidencia de una etapa anterior. Sus propuestas, estados y resultados conservan su fecha y alcance. Para reglas actuales, consultar [índice vigente](README.md), [estado](PROJECT_STATUS.md) y [mejoras pendientes](IMPROVEMENTS.md). No usar afirmaciones históricas de falta de código/publicación o costos reales obligatorios como descripción de la aplicación actual.
+
 # Plan de trabajo — Golden Print 3D
 
 Estado: propuesta; ejecución condicionada a aprobación del blueprint. Este documento no autoriza scaffold ni código. Definiciones: REQUIREMENTS.md, TECHNOLOGY_STACK.md, ARCHITECTURE.md, DATABASE_DESIGN.md, API_DESIGN.md, UX_PLAN.md y FINANCIAL_RULES.md.

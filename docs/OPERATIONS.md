@@ -1,79 +1,93 @@
-# Operación local
+# Operación, despliegue y recuperación
 
-> Regla vigente (2026-10-05, corrección del usuario): el costo del pedido se obtiene directamente del costo de producción de la revisión aceptada de la cotización, o de su ajuste explícito en el pedido. No se registra ni confirma otro costo real; la ganancia es precio acordado menos ese costo. Los registros anteriores de costos se conservan como historial y no se suman nuevamente. Los apartados históricos que exigen registro/completitud de costos quedan sustituidos por esta regla. El costo de producción no crea un movimiento de caja.
+Actualizado 2026-10-09. Producción conocida: [Golden Print](https://golden-print-3d.vercel.app), publicada previamente en Vercel con Neon. La autorización anterior del propietario para despliegue y login de la aplicación se conserva dentro de su alcance; esta actualización no publica ni cambia configuración.
 
-Fecha de referencia: 2026-10-03, America/Bogota. Desarrollo autorizado con PostgreSQL Docker existente. Esta guía no autoriza publicación productiva ni compra de servicios.
+## Configuración privada
 
-## Entorno y bases
+| Variable | Uso |
+|---|---|
+| `DATABASE_URL` | Aplicación; conexión PostgreSQL |
+| `MIGRATION_DATABASE_URL` | CLI migrador; preferir conexión directa |
+| `BETTER_AUTH_URL` | Origen exacto del navegador; HTTPS en producción |
+| `BETTER_AUTH_SECRET` | Aleatorio, al menos 32 caracteres |
+| `TEST_DATABASE_URL` | Base desechable de integración cuando se ejecutan tests |
+| `BOOTSTRAP_EMAIL/NAME/PASSWORD` | Solo inicialización privada; nunca build |
 
-`.env.local` y `.runtime/` están excluidos de Git. No pegues conexiones, contraseñas o secretos en tickets, capturas o mensajes. `DATABASE_URL` sirve a la aplicación; `MIGRATION_DATABASE_URL` sirve al migrador. En servicios remotos debe usar conexión directa para migraciones y TLS verificado para la aplicación. `BETTER_AUTH_SECRET` debe ser aleatorio, privado y estable entre reinicios; `BETTER_AUTH_URL` coincide con el origen del navegador.
+El migrador no consume automáticamente `DATABASE_URL_UNPOOLED`: mapear la conexión directa a `MIGRATION_DATABASE_URL`. No imprimir URLs, contraseñas o cookies.
 
-| Base | Uso | Destructiva |
-|---|---|---|
-| Desarrollo, conexión `DATABASE_URL` | Datos de trabajo del propietario | No |
-| Base `TEST_DATABASE_URL`, nombre terminado en `_test` | Integración de comandos y cotizaciones | Sí, fixtures sustituyen tablas |
-| `golden_print_reporting_test` | Integración financiera | Sí |
-| `golden_print_access_test` | Integración de accesos | Sí |
-| `golden_print_load_test` | Rendimiento local dedicado | Sí, datos sintéticos |
-| `golden_print_e2e` | Navegador E2E | Datos sintéticos separados |
+`.env.local`, `.env.production.local` y `.runtime/` están excluidos de Git. Producción usa variables del hosting; un archivo local no demuestra que estén configuradas allí. Verificar TLS, rol mínimo runtime, rol migrador y aislamiento de previews; no asumir esas medidas instaladas.
 
-Las suites financieras y de acceso crean sus bases mediante conexión local administrativa. E2E migra `golden_print_e2e`, que debe existir; escribe credenciales sintéticas privadas en `.runtime/e2e-credentials.json`, sin imprimirlas. Usa Microsoft Edge instalado y puerto 3001. El servidor de desarrollo del propietario permanece en 3000. Los usuarios E2E no son cuentas del negocio.
+## Desarrollo y pruebas
 
-El Compose existente está en `C:/Users/dossa/Desktop/Projects/dockers/postgres-local/docker-compose.yml`. El contenedor verificado es `postgres-local`, PostgreSQL 17, puerto local 5432. El usuario autorizó iniciar este contenedor existente:
+Seguir [README](../README.md). El entorno histórico local utiliza Docker `postgres-local`, PostgreSQL 17 y puerto 5432. Su Compose pertenece al equipo local, no se incluye en este repositorio. No borrar volúmenes para resolver conexión.
 
-```powershell
-docker start postgres-local
-docker exec postgres-local pg_isready -U postgres -d postgres
-```
+Integración usa bases desechables; E2E utiliza datos sintéticos, puerto 3001 y configuración de [playwright.config.ts](../playwright.config.ts). Revisar fixtures y variables antes de ejecutarlos. Nunca apuntarlos a producción o a datos de trabajo.
 
-Conserva los secretos y el volumen de ese Compose. No uses `down -v` ni borres volúmenes para solucionar un fallo de conexión. No levantes otros contenedores PostgreSQL del workspace.
+## Bootstrap y usuarios
 
-## Primera cuenta y contraseñas
+`npm run bootstrap` se ejecuta una sola vez sobre instalación vacía. Crea empresa, cuenta/membresía administradora, ajustes y consecutivos bajo transacción. No volver a ejecutarlo para recuperar una cuenta.
 
-Desde el proyecto, ejecuta `npm run db:migrate` y luego `npm run bootstrap` en una terminal privada. Escribe tu nombre y correo; la contraseña se ingresa oculta y tiene entre 12 y 128 caracteres. El provisionador bloquea concurrentemente la inicialización y crea empresa, cuenta Better Auth, membresía administrativa, parámetros y consecutivos en una transacción.
+No hay signup público. Administrador gestiona Usuarios; Perfil cambia contraseña propia. La última cuenta administradora activa no puede perder acceso/rol. Recuperación requiere intervención autorizada y auditable, no hashes editados arbitrariamente.
 
-El registro público permanece cerrado antes y después de inicializar. El administrador crea operadores u otros administradores desde Usuarios. Desactivar una cuenta o restablecer sus credenciales revoca sus sesiones; no se permite quitar el último administrador activo. El cambio propio de contraseña está en Perfil. Si nadie puede entrar, conserva una copia de la base y solicita recuperación administrativa específica; no repitas bootstrap ni cambies hashes manualmente.
+## Política de sesiones real
 
-## Flujo de trabajo
+[auth.ts](../src/lib/auth.ts) declara `expiresIn = 8 horas`, `updateAge = 1 hora` y caché de cookies desactivada. La renovación normal por actividad puede mover `expiresAt`; esta configuración no es un límite absoluto garantizado desde el login.
 
-1. Crea clientes y filamentos. El precio por gramo sale de valor del rollo dividido por gramos positivos.
-2. Cotiza material, h/m/s y acabados. Selecciona la oferta y guarda. Las notas internas no salen en el PDF.
-3. Marca enviada, acepta y convierte a pedido. Una cotización solo produce un pedido confirmado.
-4. Registra intentos, fallos y reimpresiones en el mismo pedido. El costo y la ganancia se calculan directamente desde la cotización vinculada.
-5. Registra anticipos o abonos con fecha efectiva. El saldo se calcula; no se fuerza el badge Pagado.
-6. Entrega el pedido. No hace falta confirmar costos para registrar la entrega.
-7. Registra gastos y desembolsos. La compra de material mueve caja; el consumo productivo no crea otro egreso. Corrige errores con motivo y conserva el rastro original.
+[SessionGuard](../src/components/session-guard.tsx) consulta sesión con `disableRefresh=true`, programa comprobación al vencimiento y revalida cada 30 segundos/al volver a la pestaña. Si ya no existe sesión, redirige a login. Un fallo temporal de red no se trata como logout confirmado.
 
-## Backup y recuperación
+El servidor revalida expiración y membresía al mutar. Pendiente: comprobar si el requisito de “8 horas” debe ser duración absoluta o inactividad y verificarlo end-to-end antes de afirmar cumplimiento absoluto.
 
-Ejemplos desde la raíz `ia`, para el contenedor anterior; reemplaza `golden_print_dev` por el nombre real de la base configurada. Los archivos pueden contener datos personales y deben guardarse en un directorio privado. Estos comandos evitan poner contraseñas en argumentos y evitan redirección binaria de PowerShell.
+## Migraciones
+
+Desarrollo carga `.env.local` mediante `npm run db:migrate`. Para un entorno productivo autorizado, con su archivo privado ya preparado:
 
 ```powershell
-New-Item -ItemType Directory -Force .\golden-print-3d-app\.runtime\backups
-$backupContainer = "postgres-local"
-docker exec $backupContainer pg_dump -U postgres -d golden_print_dev -Fc -f /tmp/golden-print-backup.dump
-docker cp "${backupContainer}:/tmp/golden-print-backup.dump" .\golden-print-3d-app\.runtime\backups\golden-print-backup.dump
-docker exec $backupContainer pg_restore --list /tmp/golden-print-backup.dump
+npx tsx --env-file=.env.production.local scripts/migrate.ts
 ```
 
-Prueba recuperación en una base nueva, nunca sobre la base activa:
+Ese comando modifica la base configurada: revisar destino, respaldo y migración primero. Ejecutar desde la raíz de la aplicación. No hacer bootstrap ni migraciones de producción durante build.
+
+El journal contiene `0000`–`0008`. `0007` agrega cantidad; `0008` permite repetir cotización/cliente. Verificar aplicación antes de usar código dependiente. Preferir expandir esquema compatible y retirar estructuras obsoletas después de estabilizar consumidores.
+
+## Publicación y rollback
+
+1. Revisar diff, commit, cuenta/proyecto destino y autorizaciones vigentes.
+2. Ejecutar validaciones pertinentes y build; registrar resultados reales.
+3. Aplicar migraciones revisadas con conexión directa cuando corresponda.
+4. Publicar mediante el flujo configurado del proyecto. La CLI debe estar autenticada y vinculada antes de usarla.
+5. Verificar SHA, despliegue listo, alias productivo y recorrido publicado.
+6. Registrar versión y limitaciones; un push no demuestra publicación.
+
+Login Golden Print y protección Vercel son controles distintos. Producción fue autorizada para usar el login propio; no extrapolar esa decisión a previews.
+
+Rollback de código usa un despliegue anterior compatible con el esquema. No revertir migraciones destructivamente ni restaurar encima de producción sin respaldo y plan explícitos.
+
+## Backup y restauración
+
+Guardar respaldos en ubicación privada, con acceso controlado. Para el contenedor local existente, desde la raíz de la app:
 
 ```powershell
-docker exec $backupContainer createdb -U postgres golden_print_recovery
-docker cp .\golden-print-3d-app\.runtime\backups\golden-print-backup.dump "${backupContainer}:/tmp/golden-print-recovery.dump"
-docker exec $backupContainer pg_restore -U postgres -d golden_print_recovery --no-owner --no-acl --exit-on-error /tmp/golden-print-recovery.dump
+New-Item -ItemType Directory -Force .runtime/backups
+docker exec postgres-local pg_dump -U postgres -d golden_print_dev -Fc -f /tmp/golden-print-backup.dump
+docker cp postgres-local:/tmp/golden-print-backup.dump .runtime/backups/golden-print-backup.dump
+docker exec postgres-local pg_restore --list /tmp/golden-print-backup.dump
 ```
 
-Verifica conteos, relaciones, acceso, totales financieros y consecutivos en esa base antes de planificar un cambio de conexión. Respalda también el secreto de autenticación y la configuración privada mediante almacenamiento seguro separado. Un comando `pg_dump` exitoso no demuestra recuperación: debe probarse la restauración. La recuperación no se ejecutó durante esta entrega.
+Sustituir nombre de base solo tras verificar el destino. Restaurar primero en una base nueva y aislada; comprobar filas, relaciones, acceso, consecutivos y conciliación. Un dump exitoso no demuestra recuperación. Para Neon, revisar las capacidades disponibles de la cuenta y ensayar restauración sin tocar la base activa. No se certifica un ensayo actual ni RPO/RTO.
 
-## Diagnóstico
+## Correcciones de datos
 
-- Conexión rechazada: verifica Docker, puerto, base creada y variables privadas; no imprimas la URL completa.
-- Login denegado: verifica que bootstrap se ejecutó en la base correcta y que la cuenta está activa. No uses credenciales E2E en desarrollo.
-- Conflicto al guardar: recarga el registro y repite sobre la versión vigente; no dupliques pagos manualmente.
-- Test de integración bloqueado: configura una base desechable terminada en `_test`; la protección evita sustituir datos de desarrollo.
-- Errores de build: conserva la salida y corrige antes de publicar. `npm start` requiere `npm run build`.
+Confirmar organización, IDs exactos y estado esperado; ejecutar transacción acotada, motivo y auditoría; verificar campos afectados e invariantes después. No inferir pagos, clientes ni fechas. Un pedido cerrado se corrige solo mediante una intervención excepcional autorizada, no habilitando una ruta genérica que eluda cierre.
 
-## Publicación
+Eliminar desde UI archiva pedido y conserva movimientos financieros. Si el pago registrado era falso, su corrección es una operación distinta con evidencia; archivo no simula devolución.
 
-Neon/Vercel no se configuraron ni publicaron. Antes del despliegue autorizado: separa roles runtime/migración, configura conexiones/secretos/origen HTTPS privados, respalda datos, aplica migraciones, inicializa la cuenta real si corresponde y repite verificación de acceso y flujo financiero. Contratación, costos y publicación mantienen aprobación independiente del propietario.
+## Diagnóstico y pendientes
+
+- Gasto guardado no visible: revisar fechas y filtros antes de crear otro.
+- Cartera inesperada: identificar pedido y pagos válidos al corte; no forzar etiqueta Pagado.
+- Pedido faltante en Inicio: contrastar `order_date`, filtro y fecha futura.
+- Sesión inválida: reautenticar y verificar membresía/origen; no debilitar autorización.
+- Versión vieja en hosting: verificar SHA y alias.
+- Error de entorno/sandbox: separar de fallo del código; conservar salida sin secretos.
+
+Prioridades: [IMPROVEMENTS](IMPROVEMENTS.md). Si un secreto se expuso, revocarlo o rotarlo y actualizar dependientes mediante la cuenta autorizada.

@@ -1,3 +1,5 @@
+> Nota de vigencia (2026-10-09): documento de diseño o evidencia de una etapa anterior. Sus propuestas, estados y resultados conservan su fecha y alcance. Para reglas actuales, consultar [índice vigente](README.md), [estado](PROJECT_STATUS.md) y [mejoras pendientes](IMPROVEMENTS.md). No usar afirmaciones históricas de falta de código/publicación o costos reales obligatorios como descripción de la aplicación actual.
+
 # Persistencia implementada
 
 El schema Drizzle PostgreSQL representa autenticación Better Auth (incluido admin y rate-limit persistente), empresa singleton, membresías, configuración, contadores, catálogos, cotizaciones versionadas, producción, ledger positivo, caja, pérdidas independientes, auditoría e idempotencia.

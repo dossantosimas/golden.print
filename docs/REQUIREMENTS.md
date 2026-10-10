@@ -1,3 +1,31 @@
+# Requisitos vigentes — actualización 2026-10-09
+
+Esta sección incorpora las aclaraciones del propietario y el comportamiento implementado al commit `5cb394a`. Los IDs originales se conservan abajo como trazabilidad histórica; sus estados NOT_TESTED no certifican cobertura actual.
+
+| ID actual | Requisito y criterio observable |
+|---|---|
+| GP-CURRENT-01 | Cotización aceptada admite compras repetidas: dos intenciones nuevas crean pedidos distintos para el mismo cliente o clientes distintos; un reintento con la misma key no duplica |
+| GP-CURRENT-02 | Cantidad 1–10000; entradas por pieza multiplican gramos, tiempo, acabados y precio; editar/duplicar no vuelve a multiplicar columnas totales |
+| GP-CURRENT-03 | Costo del producto proviene de revisión aceptada u override; no hay obligación de registrar/confirmar otro costo real |
+| GP-CURRENT-04 | Clientes con teléfono opcional; crear sin teléfono es válido |
+| GP-CURRENT-05 | Crear pedido abre modal con cliente buscable; vincular provisional es opcional y explícito |
+| GP-CURRENT-06 | Pagos válidos derivan saldo; medio de pago usa selector; sobrepago rechazado |
+| GP-CURRENT-07 | Cierre exige entrega y pago completo; UI y servidor rechazan saldo pendiente |
+| GP-CURRENT-08 | Una fecha real de entrega; corregible antes de cierre, visible en pedido entregado/cerrado |
+| GP-CURRENT-09 | Eliminar pedido requiere administrador y motivo; archivo preserva pagos/auditoría y excluye conjunto comercial activo |
+| GP-CURRENT-10 | Duplicar cotización produce borrador editable; eliminar conserva evidencia publicada/vinculada mediante archivo |
+| GP-CURRENT-11 | Creación limpia formulario tras éxito y preserva datos ante error; búsquedas/filtros deben evitar recarga completa en los flujos actualizados |
+| GP-CURRENT-12 | Inicio muestra gramos/tiempo totales, entrega, estado distinguible y saldo acumulado de caja |
+| GP-CURRENT-13 | Finanzas diferencia ventas, cobros de cohorte, cartera y flujo; no suma ventas y cobros como dos ingresos |
+| GP-CURRENT-14 | Colores simples/combinados con muestra visible, incluidos Madera y combinaciones de tres tonos |
+| GP-CURRENT-15 | Expiración real provoca redirección a login; verificar duración absoluta versus renovación por actividad antes de afirmar un máximo absoluto de ocho horas |
+
+Fuentes: [guía](USER_GUIDE.md), [finanzas](FINANCIAL_RULES.md), [contratos](API_DESIGN.md), [evidencia](VALIDATION_REPORT.md) y [mejoras](IMPROVEMENTS.md). No se declara una nueva ejecución de pruebas para estos criterios durante la actualización documental.
+
+---
+
+## Especificación original e IDs históricos
+
 > Estado de ejecución (2026-10-03): este documento conserva los escenarios del blueprint. La evidencia actual y los límites están en .traceability.yaml y VALIDATION_REPORT.md; las etiquetas originales pendientes describen la etapa de planificación.
 
 > Regla vigente (2026-10-05, corrección del usuario): el costo del pedido se obtiene directamente del costo de producción de la revisión aceptada de la cotización, o de su ajuste explícito en el pedido. No se registra ni confirma otro costo real; la ganancia es precio acordado menos ese costo. Los registros anteriores de costos se conservan como historial y no se suman nuevamente. Los apartados históricos que exigen registro/completitud de costos quedan sustituidos por esta regla. El costo de producción no crea un movimiento de caja.

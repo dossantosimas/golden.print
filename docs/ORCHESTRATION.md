@@ -1,3 +1,31 @@
+# Equipo y coordinación — actualización 2026-10-09
+
+Los nombres siguientes constan en el contexto del proyecto y/o documentos históricos. Esta tabla define responsabilidades reutilizables; no atribuye cambios concretos sin evidencia ni indica agentes activos actualmente.
+
+| Rol | Contrato |
+|---|---|
+| Principal / orquestador | Alcance, permisos, dependencias, integración, validación y comunicación |
+| atlas | Arquitectura, cardinalidades, contratos y ADR |
+| database_architect | Modelo de datos e integridad |
+| db_implementation | Implementación de esquema, persistencia y migraciones |
+| access_backend | Sesión, permisos y reglas del servidor |
+| frontend_developer | Componentes, interacción, estilos y accesibilidad |
+| frontend_app | Integración de pantallas y recorridos de usuario |
+| code_reviewer | Revisión independiente con evidencia |
+| delivery_documentation | Estado, guías de uso, operación y límites de entrega |
+
+Los agentes históricos adicionales del blueprint y rediseño se conservan en el registro inferior. Los perfiles reutilizables están documentados en el proyecto hermano `codex-framework`; no forman parte automáticamente de la configuración de esta aplicación.
+
+## Reglas operativas
+
+Delegar solo con autorización del usuario o instrucciones aplicables. Asignar objetivo, entradas, archivos exclusivos, dependencias, criterios y verificación. Paralelizar tareas independientes; serializar migraciones, lockfiles, archivos compartidos e integración. En workspace compartido, los agentes ven los mismos archivos.
+
+El principal verifica el resultado agregado; un subagente finalizado no demuestra una tarea terminada. Cada responsable devuelve cambios, pruebas realmente ejecutadas y pendientes. No ampliar permisos ni iniciar delegaciones anidadas sin autorización. La autorización anterior persiste en su alcance, incluida publicación ya solicitada; preparar resultado revisable antes de pedir aprobación que falte.
+
+---
+
+## Registro histórico del blueprint y sus revisiones
+
 # Orquestación del blueprint
 
 Fecha: 2026-10-02. Orchestrator: nexus; modo documental hasta aprobación del blueprint. Objetivo: convertir la solicitud completa y las respuestas confirmadas en un diseño ejecutable, revisado e integrado. Prohibido implementar/scaffold antes de aprobación; sin crear agentes/skills nuevos, contratar servicios o desplegar.

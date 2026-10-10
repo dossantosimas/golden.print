@@ -1,3 +1,5 @@
+> Nota de vigencia (2026-10-09): documento de diseño o evidencia de una etapa anterior. Sus propuestas, estados y resultados conservan su fecha y alcance. Para reglas actuales, consultar [índice vigente](README.md), [estado](PROJECT_STATUS.md) y [mejoras pendientes](IMPROVEMENTS.md). No usar afirmaciones históricas de falta de código/publicación o costos reales obligatorios como descripción de la aplicación actual.
+
 # Revisión de implementación
 
 Fecha: 2026-10-03, America/Bogota. Estado: correcciones revalidadas estáticamente y siete pruebas de integración de reportes aprobadas; la entrega requiere la validación completa coordinada por el orquestador. Recursos aplicados: agentes existentes `code_reviewer` y `security_auditor`. No se certifica seguridad global de runtime.

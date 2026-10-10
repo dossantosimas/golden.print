@@ -1,3 +1,19 @@
+> Actualización documental 2026-10-09: se contrastaron guías con código, configuración, migraciones y commits hasta 5cb394a, y se comprobaron los enlaces de la nueva documentación. No se repitieron typecheck, lint, suites, build ni verificación de producción en esta tarea. Los resultados inferiores conservan su fecha y alcance; no se extrapolan a todos los cambios posteriores. Pendientes en [IMPROVEMENTS](IMPROVEMENTS.md).
+
+## Verificación de documentación — 2026-10-09
+
+- PASS: 115 enlaces locales de documentos/secciones actuales; no incluye los enlaces originales dentro de copias históricas.
+- PASS: nueve entradas del journal tienen archivo SQL y los comandos npm documentados existen en package.json.
+- PASS: siete documentos reemplazados se conservaron exactamente respecto de HEAD antes de esta actualización.
+- PASS: cambios rastreados limitados a Markdown; `git diff --check` sin errores.
+- PASS: ejemplos ficticios ejecutados con el calculador puro, sin conexión a base de datos: cantidad 1 → costo 12065.541667 y precios 24131/30164/36197; cantidad 2 → costo 24131.083333 y precios 48262/60328/72394 COP.
+
+Las comprobaciones temporales se ejecutaron desde `.runtime/`, excluido de Git. No se ejecutaron suites de regresión de la aplicación ni un despliegue: este cambio es documental. Los informes de etapas anteriores continúan abajo con su alcance original.
+
+---
+
+## Evidencia anterior
+
 # Validación de implementación
 
 Fecha: 2026-10-03, America/Bogota. Entrega local implementada; cuenta real del administrador creada y acceso verificado.

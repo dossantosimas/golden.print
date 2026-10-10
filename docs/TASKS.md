@@ -1,3 +1,23 @@
+# Tareas actuales — 2026-10-09
+
+La aplicación está implementada y fue publicada previamente. Las tareas del plan original se conservan abajo como registro de aquella etapa; sus estados REVIEW/IN_PROGRESS no son el estado vigente de mantenimiento.
+
+| ID | Trabajo | Estado | Evidencia / siguiente paso |
+|---|---|---|---|
+| DOC-20261009 | Sincronizar documentación con código y requisitos posteriores | DONE | Guías actuales, historial y enlaces comprobados; no nuevo build/deploy |
+| CHANGE-REPEAT | Pedidos repetidos por cotización/cliente | DONE | Commit 21c5de7, migración 0008 |
+| CHANGE-ARCHIVE | Archivo administrativo de pedidos | DONE | Commit db4bfaa |
+| CHANGE-QUANTITY | Cantidad y totales por piezas | DONE | Commit 71fcc4c, migración 0007 |
+| CHANGE-COLLECTED | Barra Cobrado en finanzas | DONE | Commit 923cbe2 |
+| CHANGE-FILTER | Navegación cliente para filtros de cotizaciones | DONE | Commit 5cb394a |
+| FOLLOWUP | Prioridades de seguridad, recuperación y regresión | TODO | [IMPROVEMENTS](IMPROVEMENTS.md), asignar al iniciar |
+
+DONE aquí indica código presente o tarea documental comprobada; no vuelve a certificar la ejecución de suites o el estado actual de producción.
+
+---
+
+## Plan y estados originales
+
 # Tareas
 
 Estado del plan: aprobado por el propietario el 2026-10-03. Implementación creada; QA y revisión independientes en curso. Estados permitidos: TODO, IN_PROGRESS, BLOCKED, REVIEW, DONE. Ver criterios detallados en los documentos enlazados desde IMPLEMENTATION_PLAN.md; IDs de requisitos/aceptación se mantienen en REQUIREMENTS y .traceability.yaml.

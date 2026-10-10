@@ -1,23 +1,33 @@
 # Golden Print 3D
 
-> Regla vigente (2026-10-05, corrección del usuario): el costo del pedido se obtiene directamente del costo de producción de la revisión aceptada de la cotización, o de su ajuste explícito en el pedido. No se registra ni confirma otro costo real; la ganancia es precio acordado menos ese costo. Los registros anteriores de costos se conservan como historial y no se suman nuevamente. Los apartados históricos que exigen registro/completitud de costos quedan sustituidos por esta regla. El costo de producción no crea un movimiento de caja.
+Aplicación interna para cotizar impresión 3D y gestionar clientes, filamentos, pedidos, producción, pagos, gastos y finanzas. Interfaz en español; COP, zona `America/Bogota`, sin impuestos ni devoluciones.
 
-Aplicación interna para cotizar trabajos de impresión 3D, gestionar clientes, filamentos, pedidos, producción, pagos y finanzas. Interfaz en español con shadcn/ui y marca Golden Print. Moneda COP, zona horaria America/Bogota y sin impuestos.
+Documentación actualizada el **2026-10-09**, contrastada con el código del commit `5cb394a`. Producción conocida: [Golden Print](https://golden-print-3d.vercel.app). Esta actualización documental no ejecuta un nuevo despliegue ni certifica los datos actuales de la base.
 
-Stack: Next.js 16, React 19, TypeScript, Better Auth, Drizzle y PostgreSQL. La fórmula usa aritmética decimal y conserva las variables de cada revisión comercial; el costo del pedido se consulta directamente de la cotización vinculada.
+## Funcionamiento actual
 
-## Arranque local
+- Una cotización aceptada puede crear tantos pedidos como se necesiten, para el mismo cliente o distintos clientes.
+- Cantidad de piezas: gramos, tiempo, postprocesado y precio manual se ingresan por pieza; el cotizador multiplica por cantidad.
+- El costo del producto es el de la revisión aceptada, o su ajuste explícito en el pedido. No se exige registrar otro costo real.
+- Los abonos reducen el saldo; el pedido solo puede cerrarse después de entregarlo y pagarlo completamente.
+- Eliminar un pedido desde la interfaz lo archiva con motivo y conserva pagos e historial.
+- Ventas, cobros, cartera y caja tienen bases distintas; ver [reglas financieras](docs/FINANCIAL_RULES.md).
 
-Requisitos: Node compatible con `package.json`, npm y PostgreSQL de Docker disponible. El entorno de desarrollo usa PostgreSQL local; Neon y la publicación productiva requieren configuración y autorización separadas.
+## Desarrollo local
 
-Desde esta carpeta:
+Requisitos: Node `>=22.22.0 <25`, npm y PostgreSQL. Versiones fijadas en [package.json](package.json) y `package-lock.json`.
 
 ```powershell
 npm ci
+```
+
+Si todavía no existe configuración local:
+
+```powershell
 Copy-Item .env.example .env.local
 ```
 
-Configura `.env.local` de forma privada con `DATABASE_URL`, `MIGRATION_DATABASE_URL`, `TEST_DATABASE_URL`, `BETTER_AUTH_URL=http://localhost:3000` y `BETTER_AUTH_SECRET` aleatorio de al menos 32 caracteres. Usa bases distintas para desarrollo y pruebas. No copies sobre un `.env.local` ya configurado.
+Completar privadamente `DATABASE_URL`, `MIGRATION_DATABASE_URL`, `BETTER_AUTH_URL=http://localhost:3000` y `BETTER_AUTH_SECRET` aleatorio de al menos 32 caracteres. No sobrescribir archivos configurados.
 
 ```powershell
 npm run db:migrate
@@ -25,7 +35,7 @@ npm run bootstrap
 npm run dev
 ```
 
-`bootstrap` solicita nombre, correo y contraseña oculta para crear una sola vez el administrador de la empresa. No hay registro público. Si la empresa ya existe, no sobrescribe sus datos. Abre http://localhost:3000/login. El administrador crea los siguientes usuarios desde Usuarios; cada usuario puede cambiar su contraseña desde Perfil.
+Bootstrap se ejecuta una sola vez sobre una instalación vacía, nunca durante build. Solicita credenciales privadas para el primer administrador. No hay registro público. Abrir [login local](http://localhost:3000/login).
 
 ## Validación
 
@@ -38,13 +48,16 @@ npm run test:e2e
 npm run build
 ```
 
-Las pruebas de integración usan PostgreSQL real y vacían exclusivamente bases desechables. E2E usa una base separada y el puerto 3001. No ejecutes pruebas sobre datos del negocio. Consulta los resultados y límites observados en [VALIDATION_REPORT](docs/VALIDATION_REPORT.md).
+Las pruebas de integración y E2E requieren bases desechables separadas; pueden sustituir datos de prueba. Nunca usar producción. `TEST_DATABASE_URL` se configura privadamente cuando corresponda. Ver [operación](docs/OPERATIONS.md) y [evidencia de validación](docs/VALIDATION_REPORT.md).
 
 ## Documentación
 
-- [Operación, acceso, backups y recuperación](docs/OPERATIONS.md).
-- [Reglas financieras](docs/FINANCIAL_RULES.md).
-- [Arquitectura](docs/ARCHITECTURE.md) y [modelo de datos](docs/DATABASE_DESIGN.md).
-- [Estado](docs/PROJECT_STATUS.md), [tareas](docs/TASKS.md) y [requisitos](docs/REQUIREMENTS.md).
+Empezar por el [índice documental](docs/README.md).
 
-La aplicación registra anticipos y abonos con fecha y valor. Una impresión fallida se reimprime en el mismo pedido y conserva su historial de intentos. Las correcciones auditadas corrigen errores de registro; no representan devoluciones. Las ventas se reconocen al entregar y el recaudo según la fecha efectiva del pago. La ganancia usa el costo de producción de la cotización, sin registro adicional.
+- [Guía de uso](docs/USER_GUIDE.md).
+- [Estado y continuidad](docs/PROJECT_STATUS.md), [cambios](docs/RELEASES.md) y [tareas](docs/TASKS.md).
+- [Reglas financieras](docs/FINANCIAL_RULES.md) y [requisitos](docs/REQUIREMENTS.md).
+- [Arquitectura](docs/ARCHITECTURE.md), [datos](docs/DATABASE_DESIGN.md) y [contratos](docs/API_DESIGN.md).
+- [Operación y recuperación](docs/OPERATIONS.md), [equipo](docs/ORCHESTRATION.md) y [mejoras](docs/IMPROVEMENTS.md).
+
+La documentación de blueprint y los informes anteriores conservan sus fechas y evidencias. Las reglas actuales prevalecen sobre propuestas históricas.

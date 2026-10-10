@@ -1,32 +1,35 @@
 # Estado del proyecto
 
-Fecha: 2026-10-03, America/Bogota.
+Actualizado: **2026-10-09**, America/Bogota.
+Código inspeccionado: `5cb394ae259f5728df3779989843e8e342530b42`, rama `main`.
 
-Current Phase: VALIDATION_AND_DELIVERY
-Current Milestone: M5 — revisión y entrega local
+Current Phase: MAINTENANCE
+Current Milestone: documentación de la aplicación implementada y mejoras continuas
 
-El propietario aprobó el plan mediante «aprobado» y autorizó PostgreSQL del Compose postgres-local. La implementación local está creada: Next.js, shadcn/ui Base UI, Better Auth privado, Drizzle y PostgreSQL real. El login utiliza el fondo nuevo generado con el logo integrado y la paleta carbón/dorado/marfil.
+## Estado vigente
 
-Implementado: usuarios y roles, clientes, filamentos, fórmula editable y postprocesado, cotizaciones con revisiones congeladas y PDF comercial, pedidos, intentos fallidos y reimpresión, costos reales, abonos/saldo, gastos, pérdidas, caja y reportes financieros. Se conservan COP/Bogota/sin impuestos y sin devoluciones.
+La aplicación está implementada y se publicó previamente en Vercel, con PostgreSQL Neon para producción. URL conocida: [golden-print-3d.vercel.app](https://golden-print-3d.vercel.app). Repositorio: [golden.print](https://github.com/dossantosimas/golden.print).
 
-Validación: consultar VALIDATION_REPORT.md y performance-results.json para resultados ejecutados y límites. Las pruebas usan bases aisladas; no crean el administrador real de la empresa.
+El usuario autorizó la publicación y el uso del login de Golden Print en producción; la protección de previews es una configuración separada. Las credenciales y conexiones quedan en configuración privada. Esta tarea de documentación no modifica producción ni vuelve a verificar su despliegue.
 
-Primera cuenta administradora creada por bootstrap privado con las credenciales indicadas explícitamente por el propietario. Nombre de visualización: Administrador Golden Print. Inicio de sesión y cierre de la sesión de verificación comprobados; la contraseña no se guardó en archivos del proyecto.
+## Capacidades implementadas
 
-Pendiente externo: publicación productiva, configuración HTTPS y simulacro de backup/restauración. La autorización de desarrollo no autoriza contratar ni publicar servicios.
+Clientes con teléfono opcional; filamentos con colores simples/combinados; cotización multimaterial con cantidad, revisiones y PDF; pedidos repetidos desde una cotización; producción y reimpresión; entrega con una fecha real; pagos y cierre condicionado al saldo; eliminación administrativa mediante archivo; gastos, pérdidas, caja y reportes.
 
-Agentes utilizados: frontend_app (interfaz), access_backend (autenticación/cotizaciones/PDF), db_implementation (esquema/producción/pagos), implementation_review (revisión/acceso/reporting/carga), delivery_documentation (guías/trazabilidad), y orquestador (integración/QA/correcciones). Las correcciones finales y su validación quedaron a cargo del orquestador.
+Inicio resume gramos/tiempo de pedidos recientes y muestra saldo de caja acumulado. Finanzas distingue ventas entregadas y cobros de su cohorte. Cerrado y entregado tienen colores distintos. Los filtros de cotizaciones usan navegación de aplicación con conservación de scroll.
 
-La aprobación documental y el diseño anteriores quedan conservados en los documentos históricos. Las afirmaciones previas de «sin código» o «aprobación pendiente» describen esa etapa y no el estado actual.
+El costo del pedido procede de la revisión aceptada o de su ajuste explícito. Los costos antiguos se conservan como historial y no se agregan nuevamente al costo del producto.
 
-Servidor local iniciado y verificado: http://localhost:3000/login, DATABASE_URL de golden_print_dev. Validación final: 9 unitarias, 30 PostgreSQL, 4 E2E; build/typecheck/lint pasan. Evidencia y pendientes en VALIDATION_REPORT.md.
+## Evidencia y límites
 
-Rediseño integral completado el 2026-10-03: navegación carbón/dorado, dashboard compacto, finanzas agrupadas, formularios equilibrados, controles uniformes y adaptación móvil. Participaron redesign_reports, redesign_forms y frontend_app como auditor visual; el orquestador integró y verificó. Guías y decisiones en DESIGN_REDESIGN.md.
+La actualización documental se contrastó con código, configuración, migraciones y commits locales. Ver [RELEASES](RELEASES.md). No se repitieron suites de aplicación, auditoría de seguridad ni pruebas de producción durante este cambio de documentación. Los resultados anteriores se mantienen fechados en [VALIDATION_REPORT](VALIDATION_REPORT.md).
 
-Validación del rediseño: TypeScript y build pasan; ESLint conserva cero errores y 22 advertencias anteriores. Las 5 pruebas de navegador pasan, incluido el flujo comercial y una revisión de 12 módulos en 320, 360, 768 y 1440 px. Las suites unitarias/PostgreSQL anteriores no se repitieron para este cambio de interfaz.
+El repositorio incluye migraciones `0000`–`0008`; su presencia no certifica que estén aplicadas en cualquier entorno. Restauración de backups, separación de credenciales DB y aislamiento de previews necesitan verificación operativa.
 
-Revisión posterior completada: workspace sin límite de ancho, controles de lista en fila, Ajustes/Mi perfil ampliados, orientación para pedidos provisionales y color visual de filamentos con selector. Validación actual: build/typecheck PASS, lint sin errores, 11 unitarias PASS; cuatro E2E funcionales y regresión visual ampliada PASS en ejecuciones separadas. Se cubren 60 combinaciones de ruta/ancho y persistencia del color en tabla, tarjetas y detalle. Evidencia actual en VALIDATION_REPORT.md.
+La configuración de auth declara 8 horas y renovación por actividad; el guard del navegador no renueva por sí mismo. No afirmar un límite absoluto de 8 horas desde login sin revisar esa política. Ver [OPERATIONS](OPERATIONS.md).
 
-2026-10-04: barra superior retirada y workspace compacto con colores semánticos. Desde el pedido provisional se selecciona, consulta y vincula una cotización del cliente. En pedidos confirmados, el administrador ajusta costo estimado/precio con motivo, auditoría, versión y límite de pagos recibidos. Costo real y costo estimado permanecen separados. Migración aditiva 0002 aplicada. Validación más reciente: 33 PostgreSQL y 5 E2E PASS, build/typecheck PASS y lint sin errores. Evidencia completa en VALIDATION_REPORT.md.
+## Próximo trabajo
 
-Cotizador adaptado a la muestra visual del propietario: cabecera compacta exclusiva de cotización, proyecto en dos columnas, subtotales por material, paneles de tiempo/postprocesado, resumen lateral con costo/precio/utilidad y acciones reales de borrador/emisión. COP sin impuestos, gramaje de un decimal y adaptación móvil conservados. Build/TypeScript y lint dirigidos PASS; cinco E2E PASS, incluido el nuevo flujo guardar borrador → editar → emitir → aceptar → vincular pedido. Ver DESIGN_REDESIGN.md y VALIDATION_REPORT.md.
+Prioridades en [IMPROVEMENTS](IMPROVEMENTS.md): secretos, recuperación, base aislada de integración, conciliación financiera, contratos comerciales y expiración de sesiones. Antes de nuevos cambios, leer [requisitos](REQUIREMENTS.md), [reglas financieras](FINANCIAL_RULES.md) y el diff existente.
+
+Los estados y asignaciones originales se conservan como historia; no indican que aquellos agentes continúen activos.

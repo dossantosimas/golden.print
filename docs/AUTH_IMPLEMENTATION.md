@@ -1,3 +1,5 @@
+> Actualización vigente 2026-10-09: la configuración de [auth.ts](../src/lib/auth.ts) declara sesión de ocho horas con renovación por actividad (updateAge de una hora). [SessionGuard](../src/components/session-guard.tsx) comprueba vencimiento sin renovar y redirige a login. Ver [OPERATIONS](OPERATIONS.md) para límites y verificación pendiente. El contenido inferior registra la implementación en su fecha; no equivale a una auditoría nueva.
+
 # Acceso privado y administración de usuarios
 
 Implementación: Better Auth 1.7.7, adaptador Drizzle/PostgreSQL, plugin oficial admin y cliente React de mismo origen. `getAuth()` y `getDb()` son lazy: importar el módulo durante build no requiere secretos ni conexión. IDs auth se generan mediante función oficial `generateId: () => randomUUID()`; el shortcut `"uuid"` delega en defaults SQL y no corresponde a tablas auth con id text sin default.

@@ -1,3 +1,24 @@
+# Stack del repositorio — actualización 2026-10-09
+
+Fuente local: [package.json](../package.json) y package-lock.json. Node >=22.22.0 <25; npm@10.9.4. Producción conocida: Vercel + Neon. No se vuelve a comprobar compatibilidad con nuevas versiones externas en esta actualización.
+
+| Paquete | Versión declarada en package.json |
+|---|---|
+| next | 16.3.8 |
+| react | 19.3.0 |
+| better-auth | 1.7.7 |
+| drizzle-orm | 0.45.3 |
+| pg | 8.23.1 |
+| decimal.js | 10.6.0 |
+| @base-ui/react | ^1.8.0 |
+| recharts | ^3.8.0 |
+
+Los servicios reales están en src/lib, no en las carpetas features del blueprint. Ver [arquitectura vigente](ARCHITECTURE.md). La tabla original inferior conserva decisiones y fuentes de aquella fecha.
+
+---
+
+## Investigación y decisión originales
+
 # Technology Stack — Golden Print 3D
 
 Fecha: 2026-10-02. Autor: research_agent. Estado: propuesta de blueprint para revisión; sin instalación, scaffold ni pruebas de runtime.
