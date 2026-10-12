@@ -1,3 +1,14 @@
+## Origen del dinero en gastos — 2026-10-11
+
+- PASS: typecheck, build y 21 pruebas unitarias.
+- PASS: ESLint de archivos afectados: cero errores y seis advertencias previas en production-service.
+- PASS: prueba PostgreSQL acotada con rollback: empresa genera caja, usuario no; correcciones en ambos sentidos, anulación, default compatible y rechazo de fuente/usuario inválidos. Ningún gasto real modificado.
+- PASS: navegador Edge en escritorio 1440px y celular 390px sin desbordamiento; selector, explicación, payload de creación y corrección. Todas las escrituras de gastos bloqueadas en la prueba; sesión temporal eliminada.
+- PASS: migración 0010 y columna funding_source verificadas en Neon.
+- Se añadió cobertura permanente a la suite de integración. La suite completa no se ejecutó por falta de PostgreSQL local; el probe anterior tiene alcance acotado.
+
+---
+
 ## Imágenes de cotización — 2026-10-10
 
 - PASS: typecheck y build Next.js, incluyendo rutas de carga y lectura privada.

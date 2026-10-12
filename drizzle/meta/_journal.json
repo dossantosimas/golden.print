@@ -71,6 +71,13 @@
       "when": 1791666128592,
       "tag": "0009_nifty_paper_doll",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791764294398,
+      "tag": "0010_previous_kid_colt",
+      "breakpoints": true
     }
   ]
 }

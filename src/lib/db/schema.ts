@@ -196,11 +196,13 @@ export const payments = pgTable("payment", {
 export const expenses = pgTable("expense", {
   ...business(), expenseDate: date("expense_date").notNull(), description: text("description").notNull(), classification: text("classification").notNull(),
   costBehavior: text("cost_behavior"), category: text("category").notNull(), amount: money("amount").notNull(),
+  fundingSource: text("funding_source").default("company").notNull(),
   responsibleUserId: text("responsible_user_id").notNull(), notes: text("notes"), ...voidFields(),
   correctionOfId: uuid("correction_of_id").references((): AnyPgColumn => expenses.id),
 }, (t): PgTableExtraConfigValue[] => [unique("expense_org_id_uq").on(t.orgId, t.id), index("expense_date_idx").on(t.orgId, t.expenseDate, t.classification),
   foreignKey({ columns: [t.orgId, t.responsibleUserId], foreignColumns: [memberships.organizationId, memberships.userId] }).onDelete("restrict"),
   foreignKey({ columns: [t.orgId, t.correctionOfId], foreignColumns: [t.orgId, t.id] }).onDelete("restrict"),
+  check("expense_funding_source_ck", sql`${t.fundingSource} in ('company','user')`),
   check("expense_positive_ck", sql`${t.amount} > 0`), check("expense_classification_ck", sql`(${t.classification} = 'opex' and ${t.costBehavior} is not null and ${t.costBehavior} in ('fixed','variable')) or (${t.classification} = 'material_purchase' and ${t.costBehavior} is null)`)]);
 export const independentLosses = pgTable("independent_loss", {
   ...business(), recognizedDate: date("recognized_date").notNull(), category: text("category").notNull(), description: text("description").notNull(),

@@ -26,3 +26,7 @@ Para futuras entregas registrar commit, pruebas ejecutadas/resultados, entorno, 
 ## Imágenes de cotización — 2026-10-10
 
 Hasta 10 fotos privadas por revisión, cada una con título editable, miniatura y opción de quitar. Las imágenes se conservan en edición/duplicado y se incluyen en el PDF comercial con paginación. Migración 0009, dependencia Sharp fijada y validación de acceso/límites en servidor. Pruebas y restricciones en [VALIDATION_REPORT](VALIDATION_REPORT.md); diseño y mantenimiento en [QUOTE_IMAGES](QUOTE_IMAGES.md).
+
+## Gastos de empresa y personales — 2026-10-11
+
+Selector de origen del dinero en creación y corrección, identificación del pagador en el listado y detalle. Solo Empresa descuenta caja; los gastos operativos personales conservan su efecto en utilidad. Migración aditiva 0010 con compatibilidad histórica. Publicación identificable por el SHA de esta entrega en Git/Vercel.

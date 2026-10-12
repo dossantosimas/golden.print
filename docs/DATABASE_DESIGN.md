@@ -50,3 +50,7 @@ Usar bases separadas para desarrollo, pruebas y producción. No ejecutar fixture
 ## Imágenes de cotización — 2026-10-10
 
 Migración 0009: `quote_image_asset` conserva JPEG privados optimizados, dimensiones y autor/organización. `quote_revision.images` guarda hasta 10 referencias ordenadas y sus títulos; también se conservan en `formula_snapshot.inputSnapshot`. Los duplicados comparten archivos inmutables, con títulos independientes por revisión. Ver [QUOTE_IMAGES](QUOTE_IMAGES.md).
+
+## Gastos financiados por empresa o usuario — 2026-10-11
+
+Migración `0010_previous_kid_colt.sql`: agrega `expense.funding_source`, obligatorio, default `company` y CHECK `company/user`. Conserva `responsible_user_id` y valida membresía activa. El default mantiene la contabilización histórica, sin modificar movimientos de caja. Los gastos nuevos con fuente `user` no crean `cash_movement`. Correcciones conservan el original anulado y su reemplazo.

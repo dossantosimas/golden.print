@@ -59,3 +59,7 @@ Errores relevantes: `UNAUTHENTICATED`, `FORBIDDEN`, `VALIDATION_ERROR`, `NOT_FOU
 `POST /api/quote-images` recibe multipart `image` y `idempotencyKey` UUID. Requiere sesión/membresía activa, origen propio, imagen JPEG/PNG/WebP válida y máximo 2 MiB de entrada optimizada. Devuelve `{ok:true,id}`. La carga usa idempotencia y un límite de 100 archivos por usuario/hora.
 
 `GET /api/quote-images/[id]` devuelve JPEG privado solo para la organización autorizada, con `Cache-Control: private, no-store`. No recibe URLs externas. Los comandos de cotización aceptan `images:[{id,title}]`, máximo 10 referencias únicas y títulos de hasta 120 caracteres, verificando organización en servidor. El PDF resuelve las imágenes de la revisión pedida, no las de la revisión actual por defecto.
+
+## Origen del dinero en gastos
+
+`expenses.create` recibe `fundingSource: "company" | "user"`; omitirlo conserva compatibilidad y usa `company`. `expenses.update` recibe el campo dentro de `replacement`. Ambos requieren `responsibleUserId` de un miembro activo. Valores desconocidos se rechazan. La creación solo escribe salida de caja para `company`; las correcciones anulan la salida previa y aplican la misma regla al reemplazo.

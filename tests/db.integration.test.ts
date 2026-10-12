@@ -157,6 +157,18 @@ describe("PostgreSQL integrity and real commands", () => {
     const request = { orgId: ctx.organizationId, actorId: ctx.userId, operation: "production.startAttempt", idempotencyKey: randomUUID(), inputHash: "normalized-hash", resultEntityType: "order", resultEntityId: orderId, resultStatus: "committed" };
     await db.insert(schema.mutationRequests).values(request); await expect(db.insert(schema.mutationRequests).values(request)).rejects.toThrow();
   });
+  it("only company-funded expenses create cash outflows, including corrections", async () => {
+    const data={expenseDate:"2026-10-11",description:"Prueba de origen",classification:"opex",costBehavior:"fixed",category:"other",amount:"100",responsibleUserId:ctx.userId};
+    const personal=await command("expenses.create",{...data,fundingSource:"user"});
+    expect(await db.select().from(schema.cashMovements).where(eq(schema.cashMovements.expenseId,String(personal.id)))).toHaveLength(0);
+    const company=await command("expenses.create",{...data,fundingSource:"company"});
+    expect(await db.select().from(schema.cashMovements).where(eq(schema.cashMovements.expenseId,String(company.id)))).toHaveLength(1);
+    await command("expenses.update",{expenseId:company.id,expectedVersion:1,reason:"Pagó el usuario",replacement:{...data,fundingSource:"user"}});
+    const active=await db.select().from(schema.cashMovements).where(isNull(schema.cashMovements.voidedAt));
+    expect(active).toHaveLength(0);
+    const replaced=await command("expenses.update",{expenseId:personal.id,expectedVersion:1,reason:"Pagó la empresa",replacement:{...data,fundingSource:"company"}});
+    expect(await db.select().from(schema.cashMovements).where(and(eq(schema.cashMovements.expenseId,String(replaced.id)),isNull(schema.cashMovements.voidedAt)))).toHaveLength(1);
+  });
   it("provisional order rejects payments and OPEX requires explicit fixed/variable classification", async () => {
     const provisionalId = randomUUID(); await db.insert(schema.orders).values({ orgId: ctx.organizationId, createdBy: ctx.userId, id: provisionalId, sequenceNumber: 2n, code: "PED-000002", customerId, title: "Intake", orderDate: "2026-10-02" });
     await expect(command("payments.create", { orderId: provisionalId, paymentDate: "2026-10-02", amount: "10", idempotencyKey: randomUUID() })).rejects.toMatchObject({ code: "INVALID_TRANSITION" });

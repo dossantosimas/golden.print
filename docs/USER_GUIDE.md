@@ -59,3 +59,9 @@ Finanzas compara Ventas, Cobrado, Costo del producto, Operativos y Utilidad neta
 El administrador crea usuarios y gestiona roles. No puede quitar el último administrador activo. Perfil permite cambiar contraseña propia; usuarios y detalle permiten las acciones autorizadas del rol.
 
 Cuando la sesión real expira o se revoca, el guard redirige a login. Mantener una pestaña abierta no renueva la sesión mediante el guard; ver la política exacta en [operación](OPERATIONS.md).
+
+## Elegir quién paga un gasto
+
+En Gastos → Registrar gasto, elige **Origen del dinero**. **Empresa** descuenta caja y permite identificar al responsable del registro. **Dinero de un usuario** solicita el usuario que pagó y no descuenta caja. Los gastos operativos siguen afectando la utilidad. El listado muestra **Pagado por** y el detalle muestra el origen y la salida de caja correspondiente.
+
+Si el origen de un gasto anterior es incorrecto, abre su detalle y usa la corrección con motivo. Los gastos existentes mantienen su contabilización hasta corregirlos.

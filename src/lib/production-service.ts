@@ -35,7 +35,7 @@ const costShape = {
 };
 const expenseShape = { expenseDate: day, description, classification: z.enum(["opex", "material_purchase"]),
   costBehavior: z.enum(["fixed", "variable"]).nullish(), category: z.string().min(1).max(200), amount: integerMoney,
-  responsibleUserId: z.string().min(1), notes: note.optional() };
+  fundingSource: z.enum(["company", "user"]).default("company"), responsibleUserId: z.string().min(1), notes: note.optional() };
 const lossShape = { recognizedDate: day, category: z.string().min(1).max(200), description, amount: positiveDecimal,
   originReference: z.string().max(200).optional(), cashOut: cashOutShape.optional() };
 const base = (ctx: Context) => ({ orgId: ctx.organizationId, createdBy: ctx.userId });
@@ -123,7 +123,7 @@ async function addExpense(tx: DbTransaction, ctx: Context, input: z.infer<Return
   const [member] = await tx.select({ id: memberships.id }).from(memberships).where(and(eq(memberships.organizationId, ctx.organizationId), eq(memberships.userId, input.responsibleUserId), eq(memberships.active, true)));
   if (!member) fail("NOT_FOUND", "Responsable no encontrado o inactivo.");
   const [expense] = await tx.insert(expenses).values({ ...base(ctx), ...input, costBehavior: input.costBehavior ?? null, correctionOfId }).returning();
-  await writeCash(tx, ctx, "expense", expense.id, { date: expense.expenseDate, amount: expense.amount });
+  if (expense.fundingSource === "company") await writeCash(tx, ctx, "expense", expense.id, { date: expense.expenseDate, amount: expense.amount });
   await audit(tx, ctx, "expense", expense.id, correctionOfId ? "correct" : "create", { correctionOfId });
   return expense;
 }

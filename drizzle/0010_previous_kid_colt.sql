@@ -1,0 +1,2 @@
+ALTER TABLE "expense" ADD COLUMN "funding_source" text DEFAULT 'company' NOT NULL;--> statement-breakpoint
+ALTER TABLE "expense" ADD CONSTRAINT "expense_funding_source_ck" CHECK ("expense"."funding_source" in ('company','user'));
