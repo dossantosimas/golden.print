@@ -63,3 +63,5 @@ Errores relevantes: `UNAUTHENTICATED`, `FORBIDDEN`, `VALIDATION_ERROR`, `NOT_FOU
 ## Origen del dinero en gastos
 
 `expenses.create` recibe `fundingSource: "company" | "user"`; omitirlo conserva compatibilidad y usa `company`. `expenses.update` recibe el campo dentro de `replacement`. Ambos requieren `responsibleUserId` de un miembro activo. Valores desconocidos se rechazan. La creación solo escribe salida de caja para `company`; las correcciones anulan la salida previa y aplican la misma regla al reemplazo.
+
+Actualización 2026-10-12: el selector Origen del dinero muestra Empresa y cada usuario por nombre, en una única selección. Elegir un usuario envía fundingSource=user y su responsibleUserId; Empresa conserva al responsable del registro internamente. No cambia la regla de caja ni los registros anteriores.

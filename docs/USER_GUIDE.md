@@ -65,3 +65,5 @@ Cuando la sesión real expira o se revoca, el guard redirige a login. Mantener u
 En Gastos → Registrar gasto, elige **Origen del dinero**. **Empresa** descuenta caja y permite identificar al responsable del registro. **Dinero de un usuario** solicita el usuario que pagó y no descuenta caja. Los gastos operativos siguen afectando la utilidad. El listado muestra **Pagado por** y el detalle muestra el origen y la salida de caja correspondiente.
 
 Si el origen de un gasto anterior es incorrecto, abre su detalle y usa la corrección con motivo. Los gastos existentes mantienen su contabilización hasta corregirlos.
+
+Actualización 2026-10-12: el selector Origen del dinero muestra Empresa y cada usuario por nombre, en una única selección. Elegir un usuario envía fundingSource=user y su responsibleUserId; Empresa conserva al responsable del registro internamente. No cambia la regla de caja ni los registros anteriores.

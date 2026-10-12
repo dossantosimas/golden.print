@@ -101,3 +101,5 @@ Probar en base aislada cantidades 1/2, edición sin doble multiplicación, redon
 Cada gasto declara `fundingSource`: `company` (Empresa) o `user` (Dinero de un usuario). Solo Empresa genera una salida de caja. El gasto operativo afecta la utilidad aunque lo pague un usuario; comprar material no duplica el costo del producto cotizado. El usuario responsable sigue siendo obligatorio: identifica quién registró/gestionó el pago de empresa o quién pagó con dinero personal.
 
 Corregir el origen anula el movimiento original y genera uno nuevo únicamente cuando el reemplazo pertenece a Empresa. Anular un gasto personal no crea movimientos de caja. Los registros anteriores conservan su contabilización; no se reclasifican por tener un responsable asignado.
+
+Actualización 2026-10-12: el selector Origen del dinero muestra Empresa y cada usuario por nombre, en una única selección. Elegir un usuario envía fundingSource=user y su responsibleUserId; Empresa conserva al responsable del registro internamente. No cambia la regla de caja ni los registros anteriores.
