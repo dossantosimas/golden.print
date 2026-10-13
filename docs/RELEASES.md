@@ -30,3 +30,7 @@ Hasta 10 fotos privadas por revisión, cada una con título editable, miniatura 
 ## Gastos de empresa y personales — 2026-10-11
 
 Selector de origen del dinero en creación y corrección, identificación del pagador en el listado y detalle. Solo Empresa descuenta caja; los gastos operativos personales conservan su efecto en utilidad. Migración aditiva 0010 con compatibilidad histórica. Publicación identificable por el SHA de esta entrega en Git/Vercel.
+
+## Detalle del cliente — 2026-10-12
+
+Ficha propia con contacto, notas, resumen comercial real, pestañas de historial enlazado, acceso a WhatsApp y edición lateral adaptable a celular. Se conserva la actualización con versión y el archivo existente. Cotizaciones muestran proyecto, fecha comercial y estado de la revisión actual; historial activo excluye archivos.

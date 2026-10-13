@@ -67,3 +67,7 @@ En Gastos → Registrar gasto, elige **Origen del dinero**. **Empresa** descuent
 Si el origen de un gasto anterior es incorrecto, abre su detalle y usa la corrección con motivo. Los gastos existentes mantienen su contabilización hasta corregirlos.
 
 Actualización 2026-10-12: el selector Origen del dinero muestra Empresa y cada usuario por nombre, en una única selección. Elegir un usuario envía fundingSource=user y su responsibleUserId; Empresa conserva al responsable del registro internamente. No cambia la regla de caja ni los registros anteriores.
+
+## Ficha del cliente
+
+La ficha agrupa contacto y notas, pagos recibidos y saldo por cobrar. El resumen considera pedidos no archivados y pagos no anulados, sin filtro por período. Las pestañas Pedidos y Cotizaciones abren el detalle de cada registro. Editar ficha lleva al formulario con los datos actuales; teléfono sigue siendo opcional. WhatsApp y llamada aparecen cuando existe teléfono. Archivar conserva el historial.

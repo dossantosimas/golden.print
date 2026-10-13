@@ -1,3 +1,13 @@
+## Ficha del cliente — 2026-10-12
+
+- PASS: typecheck, build Next.js y ESLint de los archivos afectados sin errores ni advertencias.
+- PASS: navegador Edge a 1440px y 390px; imágenes inspeccionadas, sin desbordamiento.
+- PASS: contador de pedidos y pagos/saldo contrastados con consulta independiente de PostgreSQL; excluye pedidos archivados y pagos anulados.
+- PASS: pestañas, enlaces de detalle, formulario precargado, payload de versión/id y estado sin pedidos. Todas las escrituras bloqueadas; sesión temporal eliminada.
+- Alcance: prueba de lectura y envío interceptado; no se editaron ni archivaron clientes reales.
+
+---
+
 ## Origen del dinero en gastos — 2026-10-11
 
 - PASS: typecheck, build y 21 pruebas unitarias.
