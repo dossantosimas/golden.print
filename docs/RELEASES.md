@@ -34,3 +34,7 @@ Selector de origen del dinero en creación y corrección, identificación del pa
 ## Detalle del cliente — 2026-10-12
 
 Ficha propia con contacto, notas, resumen comercial real, pestañas de historial enlazado, acceso a WhatsApp y edición lateral adaptable a celular. Se conserva la actualización con versión y el archivo existente. Cotizaciones muestran proyecto, fecha comercial y estado de la revisión actual; historial activo excluye archivos.
+
+## Búsqueda de pedidos — 2026-10-12
+
+Buscar usa next/form con navegación de aplicación, conserva scroll, estado, vista y orden; reinicia la paginación. Limpiar y paginar también conservan scroll. El campo se sincroniza con la URL al navegar atrás/adelante.

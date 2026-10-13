@@ -1,3 +1,11 @@
+## Búsqueda de pedidos — 2026-10-12
+
+- PASS: typecheck, build y ESLint del componente sin errores ni advertencias.
+- PASS: navegador Edge con búsqueda por cliente, estado, orden, vista de tarjetas y limpieza; resultados actualizados, cero solicitudes de navegación del documento, marca del documento conservada y sin errores JavaScript. Scroll conservado y campo sincronizado al limpiar.
+- Prueba de lectura; sesión temporal eliminada.
+
+---
+
 ## Ficha del cliente — 2026-10-12
 
 - PASS: typecheck, build Next.js y ESLint de los archivos afectados sin errores ni advertencias.
