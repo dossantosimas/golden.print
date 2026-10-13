@@ -1,3 +1,12 @@
+## Detalle de pedidos con precio cero — 2026-10-12
+
+- Reproducido: PED-000104 fallaba por 0/0 al calcular el porcentaje recibido; Decimal.isPositive acepta cero.
+- PASS: build/typecheck y ESLint del componente.
+- PASS: navegador Edge abre PED-000104 sin error/NaN y sin porcentaje indefinido. Pedido con precio positivo conserva porcentaje. Celular 390px sin desbordamiento.
+- Lectura e interacciones con escrituras bloqueadas; precios, costos y pagos conservados. Sesión temporal eliminada.
+
+---
+
 ## Finanzas por meses — 2026-10-12
 
 - PASS: 26 pruebas unitarias, incluyendo meses calendario, fin de año, febrero bisiesto, límite Bogotá y rechazo de meses inválidos/futuros.

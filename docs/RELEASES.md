@@ -42,3 +42,7 @@ Buscar usa next/form con navegación de aplicación, conserva scroll, estado, vi
 ## Finanzas por meses — 2026-10-12
 
 Accesos Este mes y Mes pasado, más vista Comparación mensual con dos meses seleccionables, gráfica de barras y tabla de diferencias en COP/porcentaje. Identifica el mes actual incompleto y rechaza meses futuros o inválidos. Cambios de período y comparación usan navegación sin recarga completa.
+
+## Pedidos con precio cero — 2026-10-12
+
+El detalle solo calcula el porcentaje recibido cuando el precio es estrictamente mayor que cero. Decimal.isPositive también considera positivo el cero y provocaba 0/0 → NaN al abrir pedidos gratuitos. El cambio de visualización conserva precios, costos y pagos.

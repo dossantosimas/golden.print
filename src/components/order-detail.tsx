@@ -21,7 +21,7 @@ export async function OrderDetail({id}:{id:string}){
  const deliveryDate=item.deliveredAt?new Intl.DateTimeFormat("en-CA",{timeZone:"America/Bogota",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(String(item.deliveredAt))):date();
  const revision=related.linkedRevision?.[0];
  const price=item.agreedPrice==null?null:new D(String(item.agreedPrice)),actual=new D(String(item.actualCost??0)),profit=price?.minus(actual);
- const received=new D(String(item.receivedAmount??0)),paidPercent=price?.isPositive()?oneDecimal(received.div(price).times(100).toString()):null;
+ const received=new D(String(item.receivedAmount??0)),paidPercent=price?.gt(0)?oneDecimal(received.div(price).times(100).toString()):null;
  const seconds=BigInt(String(revision?.printSeconds??0));
  const late=Boolean(item.promisedDeliveryDate&&String(item.promisedDeliveryDate)<date()&&!["delivered","closed"].includes(String(item.status)));
  return <div className="order-detail-page"><PageHeader actions={admin?<OrderDelete orderId={id} version={item.version} code={String(item.code)}/>:undefined} title={<>Pedido {String(item.code)}</>} breadcrumbs={[{label:"Pedidos",href:"/pedidos"},{label:String(item.code)}]} badges={<><Badge variant="secondary" data-status={String(item.status)}>{display(item.status)}</Badge>{closed&&<Badge variant="outline">Solo consulta</Badge>}{!item.confirmedAt&&<Badge variant="outline">Provisional</Badge>}</>} description={paidPercent?<span className="order-header-payment">Recibido {paidPercent} % · {money(item.receivedAmount)}</span>:undefined}/>
