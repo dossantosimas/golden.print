@@ -46,3 +46,7 @@ Accesos Este mes y Mes pasado, más vista Comparación mensual con dos meses sel
 ## Pedidos con precio cero — 2026-10-12
 
 El detalle solo calcula el porcentaje recibido cuando el precio es estrictamente mayor que cero. Decimal.isPositive también considera positivo el cero y provocaba 0/0 → NaN al abrir pedidos gratuitos. El cambio de visualización conserva precios, costos y pagos.
+
+## Resumen de cotización — 2026-10-13
+
+El resumen separa Electricidad y Desgaste de impresora, usando los costos de energía y máquina ya calculados. Conserva la duración estimada y todos los totales; no modifica fórmulas ni datos guardados.

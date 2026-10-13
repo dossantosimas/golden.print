@@ -5,7 +5,7 @@ import {CustomerCombobox} from "@/components/customer-combobox";
 import {PageHeader} from "@/components/page-header";
 import {useRef,useState} from "react";
 import Link from "next/link";
-import {Plus,Save,Check,Copy,Clock,Layers,Trash2,Info,Coins,Paintbrush,TrendingUp,FileText} from "lucide-react";
+import {Plus,Save,Check,Copy,Zap,Settings2,Layers,Trash2,Info,Coins,Paintbrush,TrendingUp,FileText} from "lucide-react";
 import {useRouter} from "next/navigation";
 import {useForm,useFieldArray,useWatch,Controller} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -46,7 +46,8 @@ export function QuoteForm({customers,filaments,defaults,initial,quoteId,revision
  <Card className="quote-notes-card"><CardHeader><CardTitle>Notas y observaciones</CardTitle></CardHeader><CardContent><FieldGroup><Field><FieldLabel htmlFor="customer-notes">Notas para el cliente</FieldLabel><Textarea id="customer-notes" {...form.register("customerNotes")}/></Field><Field><FieldLabel htmlFor="internal-notes">Notas internas</FieldLabel><Textarea id="internal-notes" {...form.register("internalNotes")}/><FieldDescription>No se incluyen en el PDF del cliente.</FieldDescription></Field></FieldGroup></CardContent></Card></div>
  <aside className="quote-calculation"><Card className="quote-summary-card"><CardHeader><CardTitle>Resumen del cálculo</CardTitle><span className={actualPrice!==null?"quote-ready":"quote-incomplete"}>{actualPrice!==null?"Listo para cotizar":"Completa los datos"}</span></CardHeader><CardContent><dl className="calculation-summary">
  <div><dt><Layers aria-hidden="true"/>Material ({(()=>{try{return oneDecimal(values.materials.reduce((n,line)=>n.plus(line.grams||0),new D(0)).times(Number(values.quantity)||1).toString());}catch{return "—";}})()} g)</dt><dd>{preview?money(preview.components.material):"—"}</dd></div>
- <div><dt><Clock aria-hidden="true"/>Impresión ({totalDuration})</dt><dd>{preview?money(new D(preview.components.energy).plus(preview.components.machine).toString()):"—"}</dd></div>
+ <div><dt><Zap aria-hidden="true"/>Electricidad ({totalDuration})</dt><dd>{preview?money(preview.components.energy):"—"}</dd></div>
+ <div><dt><Settings2 aria-hidden="true"/>Desgaste de impresora</dt><dd>{preview?money(preview.components.machine):"—"}</dd></div>
  <div><dt><Paintbrush aria-hidden="true"/>Postprocesado</dt><dd>{preview?money(preview.components.postprocess):"—"}</dd></div><div><dt><Coins aria-hidden="true"/>Contingencia</dt><dd>{preview?money(preview.components.contingency):"—"}</dd></div>
  {actualProfit!==null&&<div className="quote-profit" data-tone={actualProfit.isNegative()?"negative":actualProfit.isPositive()?"positive":"neutral"}><dt><TrendingUp aria-hidden="true"/>Utilidad{actualMargin!==null?" ("+new D(actualMargin).toString()+" %)":""}</dt><dd>{actualProfit.isPositive()?"+ ":""}{money(actualProfit.toString())}</dd></div>}
  </dl>
