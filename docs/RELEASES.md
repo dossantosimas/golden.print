@@ -38,3 +38,7 @@ Ficha propia con contacto, notas, resumen comercial real, pestañas de historial
 ## Búsqueda de pedidos — 2026-10-12
 
 Buscar usa next/form con navegación de aplicación, conserva scroll, estado, vista y orden; reinicia la paginación. Limpiar y paginar también conservan scroll. El campo se sincroniza con la URL al navegar atrás/adelante.
+
+## Finanzas por meses — 2026-10-12
+
+Accesos Este mes y Mes pasado, más vista Comparación mensual con dos meses seleccionables, gráfica de barras y tabla de diferencias en COP/porcentaje. Identifica el mes actual incompleto y rechaza meses futuros o inválidos. Cambios de período y comparación usan navegación sin recarga completa.

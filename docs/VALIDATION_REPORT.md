@@ -1,3 +1,14 @@
+## Finanzas por meses — 2026-10-12
+
+- PASS: 26 pruebas unitarias, incluyendo meses calendario, fin de año, febrero bisiesto, límite Bogotá y rechazo de meses inválidos/futuros.
+- PASS: build y typecheck; ESLint de archivos afectados sin errores ni advertencias.
+- PASS: navegador Edge: accesos Este mes/Mes pasado, selección de dos meses, gráfico, tabla y recuperación de mes inválido. Marca del documento conservada y cero solicitudes de recarga completa.
+- PASS: ventas, pagos recibidos y salidas de caja de septiembre/octubre contrastados con consultas PostgreSQL independientes.
+- Escritorio 1440px y celular 390px inspeccionados; versión móvil presenta ambos meses y diferencias por indicador. Sesión temporal eliminada; sin escrituras comerciales.
+- La comparación usa el reporte vigente recalculado, no snapshots históricos. Mes actual parcial hasta hoy.
+
+---
+
 ## Búsqueda de pedidos — 2026-10-12
 
 - PASS: typecheck, build y ESLint del componente sin errores ni advertencias.

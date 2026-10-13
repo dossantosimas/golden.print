@@ -71,3 +71,9 @@ Actualización 2026-10-12: el selector Origen del dinero muestra Empresa y cada 
 ## Ficha del cliente
 
 La ficha agrupa contacto y notas, pagos recibidos y saldo por cobrar. El resumen considera pedidos no archivados y pagos no anulados, sin filtro por período. Las pestañas Pedidos y Cotizaciones abren el detalle de cada registro. Editar ficha lleva al formulario con los datos actuales; teléfono sigue siendo opcional. WhatsApp y llamada aparecen cuando existe teléfono. Archivar conserva el historial.
+
+## Comparar meses en Finanzas
+
+Este mes toma el día 1 hasta hoy en Colombia. Mes pasado toma el mes calendario completo anterior. Se conservan los rangos móviles 1 mes y 3 meses. En Comparación mensual elige Mes base y Mes a comparar; la gráfica contrasta ventas, recaudo, utilidad neta y caja neta. La tabla añade costos, gastos, pérdidas, entradas/salidas y cartera. Diferencia = mes a comparar menos mes base; variación porcentual solo tiene base cuando el valor base es positivo.
+
+El mes actual se identifica como incompleto. Ventas y costos corresponden a entregas, recaudo a fecha de pago, caja a fecha de movimiento y cartera al saldo acumulado al corte. Son registros vigentes recalculados; no snapshots históricos inmutables.

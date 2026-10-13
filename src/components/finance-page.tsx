@@ -1,3 +1,4 @@
+import {FinanceMonthlyComparison,FinanceViewTabs} from "@/components/finance-monthly-comparison";
 import {PageHeader} from "@/components/page-header";
 import Link from "next/link";
 import {Banknote,Wallet,ChartNoAxesColumn,TrendingUp,Users,ArrowUpRight,TriangleAlert,Plus,Target} from "lucide-react";
@@ -17,13 +18,14 @@ import {Table,TableHeader,TableBody,TableRow,TableHead,TableCell} from "@/compon
 const labels:Record<string,string>={sales:"Ventas de pedidos entregados",directCosts:"Costo de productos entregados",grossProfit:"Utilidad bruta",grossMargin:"Margen bruto",opex:"Gastos operativos",independentLosses:"Pérdidas independientes",netProfit:"Utilidad neta operativa",receipts:"Recaudo del período",cohortReceipts:"Recaudo de pedidos entregados",collectionRate:"Cobro de entregas",receivables:"Cartera global",cashIn:"Entradas de caja",cashOut:"Salidas de caja",cashNet:"Flujo de caja neto",failedCosts:"Costos de intentos fallidos",breakEven:"Punto de equilibrio del período",breakEvenProgress:"Avance del equilibrio"};
 const value=(key:string,v:unknown)=>v===null||v===undefined?"Sin base":/Margin|Rate|Progress/.test(key)?percentage(v):money(v);
 function Rows({keys,metrics}:{keys:string[];metrics:Record<string,unknown>}){return <dl className="finance-analysis-rows">{keys.map(key=><div key={key}><dt>{labels[key]}</dt><dd data-tone={metricSignal(key,metrics[key]).tone}>{value(key,metrics[key])}</dd></div>)}</dl>;}
-export async function FinancePage({start="",end=""}:{start?:string;end?:string}){
+export async function FinancePage({start="",end="",view="",monthA,monthB}:{start?:string;end?:string;view?:string;monthA?:string;monthB?:string}){
+ if(view==="comparison")return <FinanceMonthlyComparison start={start} end={end} monthA={monthA} monthB={monthB}/>;
  let data;try{data=await getWorkspaceData("finance","",start&&end?start+":"+end:"");}catch{return <Alert variant="destructive"><AlertTitle>No pudimos cargar Finanzas</AlertTitle><AlertDescription>Revisa el período e intenta de nuevo.</AlertDescription></Alert>;}
  const metrics=data.metrics??{},cash=(data as unknown as {cashMovements?:Record<string,unknown>[]}).cashMovements??[];
  const progress=metrics.breakEvenProgress===null||metrics.breakEvenProgress===undefined?null:Math.max(0,Math.min(100,Number(metrics.breakEvenProgress)));
  return <div className="finance-page">
   <PageHeader title="Finanzas" breadcrumbs={[{label:"Finanzas"}]} description="Resultados del período, cartera y caja en pesos colombianos." actions={<Button render={<Link href="/gastos"/>} nativeButton={false}><Plus data-icon="inline-start"/>Registrar gasto</Button>}/>
-  <PeriodToolbar start={start} end={end}/>
+  <FinanceViewTabs start={start} end={end}/><PeriodToolbar start={start} end={end} calendarMonths/>
   <section className="finance-kpis" aria-label="Indicadores financieros">{[{key:"sales",icon:Banknote,detail:"Pedidos entregados en el período"},{key:"netProfit",icon:TrendingUp,detail:"Después de costos, gastos y pérdidas"},{key:"receivables",icon:Wallet,detail:"Saldo de pedidos confirmados al cierre"},{key:"cashNet",icon:ChartNoAxesColumn,detail:"Entradas menos salidas del período"}].map(({key,icon:Icon,detail})=>{const signal=metricSignal(key,metrics[key]);return <article key={key} data-tone={signal.tone}><header><h2>{labels[key]}</h2><Icon aria-hidden="true"/></header><strong>{money(metrics[key])}<small>COP</small></strong><span className="finance-kpi-signal">{signal.label}</span><p>{detail}</p></article>;})}</section>
   <Card className="finance-comparison"><CardHeader><div><CardTitle>Ventas, cobros, costos y utilidad</CardTitle><CardDescription>Cobrado muestra los pagos recibidos de los pedidos entregados en el período, hasta la fecha de corte.</CardDescription></div><span className="finance-chart-unit">COP · Pesos colombianos</span></CardHeader><CardContent><FinanceChart metrics={metrics}/></CardContent></Card>
   <div className="finance-analysis-grid">

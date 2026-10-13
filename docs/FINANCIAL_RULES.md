@@ -103,3 +103,7 @@ Cada gasto declara `fundingSource`: `company` (Empresa) o `user` (Dinero de un u
 Corregir el origen anula el movimiento original y genera uno nuevo únicamente cuando el reemplazo pertenece a Empresa. Anular un gasto personal no crea movimientos de caja. Los registros anteriores conservan su contabilización; no se reclasifican por tener un responsable asignado.
 
 Actualización 2026-10-12: el selector Origen del dinero muestra Empresa y cada usuario por nombre, en una única selección. Elegir un usuario envía fundingSource=user y su responsibleUserId; Empresa conserva al responsable del registro internamente. No cambia la regla de caja ni los registros anteriores.
+
+## Comparación mensual
+
+La comparación aplica las mismas reglas de reportingData por separado a dos meses calendario. El mes actual termina hoy en America/Bogota; los anteriores terminan en su último día. La cartera es global al corte de cada mes, no un flujo mensual. La diferencia siempre es segundo mes menos primero; porcentaje = diferencia/base*100 solo con base positiva. No representa rentabilidad. Los reportes usan registros vigentes (current_restated), sin congelar estados históricos.
