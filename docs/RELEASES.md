@@ -50,3 +50,7 @@ El detalle solo calcula el porcentaje recibido cuando el precio es estrictamente
 ## Resumen de cotización — 2026-10-13
 
 El resumen separa Electricidad y Desgaste de impresora, usando los costos de energía y máquina ya calculados. Conserva la duración estimada y todos los totales; no modifica fórmulas ni datos guardados.
+
+## Edición de gastos y proyecciones — 2026-10-14
+
+Botón Editar en filas y tarjetas de gastos, enlace directo al formulario y guardado con motivo e historial. Nueva vista Proyecciones y equilibrio con histórico de seis meses, proyección del mes actual, tres meses estimados, gráfica, meta y avance mensual. Reutiliza costos financieros existentes; no requiere migración.

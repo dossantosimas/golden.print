@@ -10,8 +10,8 @@ export function ExpenseEditor({item,responsibles}:{item:Record<string,unknown>;r
  const options=responsibles.some(r=>r.value===String(item.responsibleUserId))?responsibles:[{value:String(item.responsibleUserId),label:String(item.responsibleName)},...responsibles];
  const payload={expenseId:item.id,expectedVersion:item.version,responsibleUserId:item.responsibleUserId};
  return <div className="expense-editor-body" onChange={event=>{const input=event.target as HTMLInputElement;if(input.name==="fundingOrigin")setFundingSource(input.value);if(input.name==="classification")setClassification(input.value);if(input.name==="amount")setAmount(input.value);}}>
-  <CommandForm command="expenses.update" payload={payload} label="Guardar corrección" redirectTo="/gastos/:id" fields={[
-   {name:"reason",label:"Motivo de la corrección",required:true,help:"Explica qué dato necesitas corregir."},
+  <CommandForm command="expenses.update" payload={payload} label="Guardar cambios" redirectTo="/gastos/:id" fields={[
+   {name:"reason",label:"Motivo del cambio",required:true,help:"Explica qué dato necesitas corregir."},
    {name:"expenseDate",label:"Fecha",type:"date",value:String(item.expenseDate),required:true},
    {name:"amount",label:"Valor (COP)",type:"number",min:"1",step:"1",value:String(item.amount),required:true},
    {name:"description",label:"Descripción",value:String(item.description),required:true},

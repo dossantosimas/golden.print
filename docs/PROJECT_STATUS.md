@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Actualizado: **2026-10-11**, America/Bogota.
+Actualizado: **2026-10-14**, America/Bogota.
 Base anterior: `5cb394a`, rama `main`. La entrega del 10 de octubre agrega imágenes de cotización; consultar el historial Git para el SHA de publicación.
 
 Current Phase: MAINTENANCE
@@ -35,3 +35,5 @@ Prioridades en [IMPROVEMENTS](IMPROVEMENTS.md): secretos, recuperación, base ai
 Los estados y asignaciones originales se conservan como historia; no indican que aquellos agentes continúen activos.
 
 La entrega del 11 de octubre distingue gastos pagados por Empresa y por usuarios. Solo Empresa genera salida de caja. Migración 0010 aplicada y verificada en Neon; registros históricos conservados.
+
+Entrega del 14 de octubre: edición de gastos accesible desde listado y nueva vista de proyecciones/equilibrio. Ver RELEASES y VALIDATION_REPORT para método y alcance de verificación.

@@ -77,3 +77,9 @@ La ficha agrupa contacto y notas, pagos recibidos y saldo por cobrar. El resumen
 Este mes toma el día 1 hasta hoy en Colombia. Mes pasado toma el mes calendario completo anterior. Se conservan los rangos móviles 1 mes y 3 meses. En Comparación mensual elige Mes base y Mes a comparar; la gráfica contrasta ventas, recaudo, utilidad neta y caja neta. La tabla añade costos, gastos, pérdidas, entradas/salidas y cartera. Diferencia = mes a comparar menos mes base; variación porcentual solo tiene base cuando el valor base es positivo.
 
 El mes actual se identifica como incompleto. Ventas y costos corresponden a entregas, recaudo a fecha de pago, caja a fecha de movimiento y cartera al saldo acumulado al corte. Son registros vigentes recalculados; no snapshots históricos inmutables.
+
+## Editar gastos y consultar proyecciones
+
+En Gastos, el botón Editar abre el formulario con descripción, importe, fecha, clasificación, categoría, origen del dinero y notas actuales. Indica el motivo y guarda los cambios. El registro anterior queda en el historial; los movimientos se corrigen sin duplicar caja.
+
+Finanzas → Proyecciones y equilibrio muestra seis meses completos, el actual y tres futuros. El cierre actual extrapola ventas/costos variables al ritmo diario, con costos fijos por el mayor entre lo registrado y el promedio de los tres meses completos anteriores. Los próximos tres usan ese promedio, incluyendo meses sin movimientos. Meta y avance futuros son estimaciones.

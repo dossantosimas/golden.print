@@ -107,3 +107,9 @@ Actualización 2026-10-12: el selector Origen del dinero muestra Empresa y cada 
 ## Comparación mensual
 
 La comparación aplica las mismas reglas de reportingData por separado a dos meses calendario. El mes actual termina hoy en America/Bogota; los anteriores terminan en su último día. La cartera es global al corte de cada mes, no un flujo mensual. La diferencia siempre es segundo mes menos primero; porcentaje = diferencia/base*100 solo con base positiva. No representa rentabilidad. Los reportes usan registros vigentes (current_restated), sin congelar estados históricos.
+
+## Proyecciones mensuales — 2026-10-14
+
+La base son los últimos tres meses completos, incluyendo ceros. La proyección del mes actual escala ventas y costos variables por días del mes / días transcurridos en Bogotá. Usa costos fijos = máximo(fijos registrados, promedio de fijos base), evitando reducir costos ya conocidos o multiplicar automáticamente gastos fijos pagados al inicio del mes. Utilidad estimada = ventas estimadas - variables estimados - fijos estimados.
+
+Para cada uno de los próximos tres meses se usa el mismo promedio mensual de ventas/fijos/variables de la base, sin inventar crecimiento. Meta de equilibrio = fijos / ((ventas - variables)/ventas), solo con ventas y contribución positivas. En el mes actual el avance es ventas reales / meta mensual estimada; para meses futuros usa ventas estimadas. Una meta cero no genera división por cero. No se incluyen pedidos no entregados ni estacionalidad. No es un presupuesto de caja ni un snapshot histórico inmutable.

@@ -1,3 +1,13 @@
+## Edición de gastos y proyecciones — 2026-10-14
+
+- PASS: 32 pruebas unitarias, con seis casos nuevos de proyección: contribución, falta de base, meta cero, promedio con meses sin actividad, costos fijos conocidos, bisiestos y cambio de año.
+- PASS: typecheck/build y ESLint de archivos afectados sin errores ni advertencias.
+- PASS: prueba PostgreSQL acotada, íntegramente revertida: edición de importe/fecha/descripción, caja consistente, cambios de origen y anulación sin duplicados. No se ejecutó la suite de integración completa local; PostgreSQL local no está disponible.
+- PASS: navegador Edge a 1440px y 390px: botón Editar, envío del reemplazo interceptado, pestaña de proyecciones sin recarga completa, seis meses históricos, uno actual y tres estimados; ventas reales contrastadas con consulta independiente. Capturas inspeccionadas; sin desbordamiento ni errores JavaScript.
+- Todas las escrituras de formularios bloqueadas y sesiones temporales eliminadas. Ningún gasto real modificado.
+
+---
+
 ## Detalle de pedidos con precio cero — 2026-10-12
 
 - Reproducido: PED-000104 fallaba por 0/0 al calcular el porcentaje recibido; Decimal.isPositive acepta cero.

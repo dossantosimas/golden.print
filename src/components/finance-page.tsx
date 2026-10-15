@@ -1,3 +1,4 @@
+import {FinanceProjections} from "@/components/finance-projections";
 import {FinanceMonthlyComparison,FinanceViewTabs} from "@/components/finance-monthly-comparison";
 import {PageHeader} from "@/components/page-header";
 import Link from "next/link";
@@ -19,6 +20,7 @@ const labels:Record<string,string>={sales:"Ventas de pedidos entregados",directC
 const value=(key:string,v:unknown)=>v===null||v===undefined?"Sin base":/Margin|Rate|Progress/.test(key)?percentage(v):money(v);
 function Rows({keys,metrics}:{keys:string[];metrics:Record<string,unknown>}){return <dl className="finance-analysis-rows">{keys.map(key=><div key={key}><dt>{labels[key]}</dt><dd data-tone={metricSignal(key,metrics[key]).tone}>{value(key,metrics[key])}</dd></div>)}</dl>;}
 export async function FinancePage({start="",end="",view="",monthA,monthB}:{start?:string;end?:string;view?:string;monthA?:string;monthB?:string}){
+ if(view==="projections")return <FinanceProjections start={start} end={end}/>;
  if(view==="comparison")return <FinanceMonthlyComparison start={start} end={end} monthA={monthA} monthB={monthB}/>;
  let data;try{data=await getWorkspaceData("finance","",start&&end?start+":"+end:"");}catch{return <Alert variant="destructive"><AlertTitle>No pudimos cargar Finanzas</AlertTitle><AlertDescription>Revisa el período e intenta de nuevo.</AlertDescription></Alert>;}
  const metrics=data.metrics??{},cash=(data as unknown as {cashMovements?:Record<string,unknown>[]}).cashMovements??[];

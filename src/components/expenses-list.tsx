@@ -1,6 +1,6 @@
 import {PageHeader} from "@/components/page-header";
 import Link from "next/link";
-import {Wallet,Plug,Wrench,CalendarDays,Search,Plus,ArrowRight,ChevronLeft,ChevronRight,Info} from "lucide-react";
+import {Wallet,Plug,Wrench,CalendarDays,Search,Plus,ArrowRight,ChevronLeft,ChevronRight,Info,SquarePen} from "lucide-react";
 import {getWorkspaceData} from "@/lib/app-service";
 import {todayBogota} from "@/lib/dates";
 import {money} from "@/components/display";
@@ -17,7 +17,7 @@ import {Table,TableHeader,TableBody,TableHead,TableRow,TableCell} from "@/compon
 type Expense=Record<string,unknown>;
 function Classification({item}:{item:Expense}){return <div className="expense-classification"><Badge variant="outline" data-tone={item.classification==="material_purchase"?"info":item.costBehavior==="variable"?"warning":"gold"}>{item.classification==="material_purchase"?"Compra de material":item.costBehavior==="fixed"?"Operativo fijo":"Operativo variable"}</Badge><small>{String(item.category)}</small></div>;}
 function Responsible({item}:{item:Expense}){const name=item.fundingSource==="user"?String(item.responsibleName):"Empresa";return <span className="expense-responsible"><span>{name.split(/\s+/).slice(0,2).map(p=>p[0]).join("").toUpperCase()}</span>{name}</span>;}
-function Open({item}:{item:Expense}){return <Link className="customer-open" href={`/gastos/${item.id}`} aria-label={`Abrir gasto ${item.description}`}>Abrir<ArrowRight aria-hidden="true"/></Link>;}
+function Open({item}:{item:Expense}){return <div className="expense-row-actions"><Link className="customer-open" href={`/gastos/${item.id}`} aria-label={`Abrir gasto ${item.description}`}>Abrir<ArrowRight aria-hidden="true"/></Link><Link className="customer-open" href={`/gastos/${item.id}#editar-gasto`} aria-label={`Editar gasto ${item.description}`}><SquarePen aria-hidden="true"/>Editar</Link></div>;}
 
 export async function ExpensesList({q="",filter="",page="1",sort="date",view="table",start,end}:{q?:string;filter?:string;page?:string;sort?:string;view?:string;start?:string;end?:string}){
  const today=todayBogota(),from=start??today.slice(0,7)+"-01",until=end??today;
