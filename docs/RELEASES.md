@@ -58,3 +58,7 @@ Botón Editar en filas y tarjetas de gastos, enlace directo al formulario y guar
 ## Gastos por pagador — 2026-10-25
 
 Nueva pestaña Por usuario y empresa con totales por origen del dinero para todo el período, desglose operativo/material, porcentaje y número de registros. Incluye usuarios sin gastos, excluye anulados y usa navegación sin recarga completa al cambiar pestaña o fechas. No requiere migración ni modifica registros existentes.
+
+## Gráfica de gastos por pagador — 2026-10-25
+
+La pestaña Por usuario y empresa incluye barras por pagador, separando gastos operativos y compras de material. La gráfica usa los mismos totales de las tarjetas y responde al período seleccionado. Mantiene cifras exactas en el desglose y en el tooltip.

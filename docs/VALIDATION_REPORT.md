@@ -1,3 +1,12 @@
+## Gráfica de gastos por pagador — 2026-10-25
+
+- PASS: build/typecheck y ESLint de los componentes afectados.
+- PASS: navegador con barras apiladas por usuario/empresa, tooltip con importes exactos, cifras contrastadas con PostgreSQL, cambios de período y estado vacío sin recarga completa.
+- PASS: capturas a 1440px y 390px inspeccionadas; gráfico adaptable sin desbordamiento tras su actualización responsive.
+- Sin modificaciones de datos comerciales; sesión temporal eliminada.
+
+---
+
 ## Gastos por pagador — 2026-10-25
 
 - PASS: 35 pruebas unitarias, incluidas agrupación por origen real y no por responsable, exclusión de anulados/reemplazos y usuarios en cero.

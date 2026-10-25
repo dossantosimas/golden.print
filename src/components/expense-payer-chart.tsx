@@ -1,0 +1,10 @@
+"use client";
+import {Bar,BarChart,CartesianGrid,XAxis,YAxis} from "recharts";
+import {ChartContainer,ChartTooltip} from "@/components/ui/chart";
+import {money} from "@/components/display";
+import type {ExpensePayerTotal} from "@/lib/expense-payers";
+const config={operating:{label:"Gastos operativos",color:"#9b732b"},materials:{label:"Compras de material",color:"#245a83"}};
+export function ExpensePayerChart({rows}:{rows:ExpensePayerTotal[]}){
+ const data=rows.map(row=>({...row,operatingValue:Number(row.operating),materialsValue:Number(row.materials)}));
+ return <div className="expense-payer-chart"><h3>Distribución de gastos por pagador</h3><div className="expense-payer-chart-legend"><span><i/>Gastos operativos</span><span><i/>Compras de material</span></div><ChartContainer config={config} style={{height:Math.max(250,rows.length*58+50)}} className="w-full" aria-label="Gráfica de gastos por usuario y empresa en pesos colombianos"><BarChart accessibilityLayer data={data} layout="vertical" margin={{top:8,right:16,bottom:12,left:0}}><CartesianGrid horizontal={false}/><XAxis type="number" tickLine={false} axisLine={false} tickFormatter={value=>new Intl.NumberFormat("es-CO",{notation:"compact"}).format(value)}/><YAxis dataKey="name" type="category" interval={0} width={120} tick={{fontSize:12}} tickLine={false} axisLine={false}/><ChartTooltip cursor={{fill:"var(--muted)"}} content={({active,payload})=>{const row=payload?.[0]?.payload as typeof data[number]|undefined;return active&&row?<div className="expense-payer-chart-tooltip"><strong>{row.name}</strong><p>Operativos: {money(row.operating)}</p><p>Materiales: {money(row.materials)}</p><b>Total: {money(row.total)}</b></div>:null;}}/><Bar name="Gastos operativos" dataKey="operatingValue" stackId="expenses" fill="#9b732b" maxBarSize={30} isAnimationActive={false}/><Bar name="Compras de material" dataKey="materialsValue" stackId="expenses" fill="#245a83" radius={[0,4,4,0]} maxBarSize={30} isAnimationActive={false}/></BarChart></ChartContainer></div>;
+}
