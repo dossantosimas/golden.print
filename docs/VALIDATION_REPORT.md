@@ -1,3 +1,13 @@
+## Gastos por pagador — 2026-10-25
+
+- PASS: 35 pruebas unitarias, incluidas agrupación por origen real y no por responsable, exclusión de anulados/reemplazos y usuarios en cero.
+- PASS: typecheck/build y ESLint de archivos afectados sin errores ni advertencias.
+- PASS: navegador Edge: cada total por pagador y total general contrastados con agregados PostgreSQL independientes, filtros Todo/período vacío, pestaña conservada y cero recargas completas.
+- PASS: escritorio 1440px y celular 390px inspeccionados sin desbordamiento.
+- Sin escrituras comerciales; todas las acciones POST bloqueadas y sesión temporal eliminada.
+
+---
+
 ## Edición de gastos y proyecciones — 2026-10-14
 
 - PASS: 32 pruebas unitarias, con seis casos nuevos de proyección: contribución, falta de base, meta cero, promedio con meses sin actividad, costos fijos conocidos, bisiestos y cambio de año.

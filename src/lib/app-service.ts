@@ -1,3 +1,4 @@
+import {summarizeExpensePayers} from "./expense-payers";
 import "server-only";
 import {and,eq,isNull,desc,asc,or,ilike,inArray,count,sql,gte,lte} from "drizzle-orm";
 import {z} from "zod";
@@ -90,7 +91,7 @@ export async function getWorkspaceData(entity:string,q="",filter="",options:{pag
  const sum=(predicate:(f:Record<string,unknown>)=>boolean)=>items.filter(predicate).reduce((n,f)=>n.plus(String(f.amount)),new D(0));
  const total=sum(()=>true),fixed=sum(f=>f.classification==="opex"&&f.costBehavior==="fixed"),variable=sum(f=>f.classification==="opex"&&f.costBehavior==="variable"),purchases=sum(f=>f.classification==="material_purchase");
  const days=range?.startDate?Math.round((new Date(range.endDate+"T12:00:00Z").getTime()-new Date(range.startDate+"T12:00:00Z").getTime())/86400000)+1:null;
- metrics={periodCount:items.length,totalExpenses:total.toFixed(0),fixedExpenses:fixed.toFixed(0),variableExpenses:variable.toFixed(0),materialPurchases:purchases.toFixed(0),dailyAverage:days?quantize(total.div(days)):null,periodDays:days,categories:[...new Set(items.map(f=>String(f.category)))].sort((a,b)=>a.localeCompare(b,"es"))};
+ metrics={payerTotals:summarizeExpensePayers(items),periodCount:items.length,totalExpenses:total.toFixed(0),fixedExpenses:fixed.toFixed(0),variableExpenses:variable.toFixed(0),materialPurchases:purchases.toFixed(0),dailyAverage:days?quantize(total.div(days)):null,periodDays:days,categories:[...new Set(items.map(f=>String(f.category)))].sort((a,b)=>a.localeCompare(b,"es"))};
  }
  else if(entity==="losses")items=await db.select().from(s.independentLosses).where(and(eq(s.independentLosses.orgId,org),isNull(s.independentLosses.voidedAt)));
  else if(entity==="users")items=await listUsers();

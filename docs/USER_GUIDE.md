@@ -83,3 +83,7 @@ El mes actual se identifica como incompleto. Ventas y costos corresponden a entr
 En Gastos, el botón Editar abre el formulario con descripción, importe, fecha, clasificación, categoría, origen del dinero y notas actuales. Indica el motivo y guarda los cambios. El registro anterior queda en el historial; los movimientos se corrigen sin duplicar caja.
 
 Finanzas → Proyecciones y equilibrio muestra seis meses completos, el actual y tres futuros. El cierre actual extrapola ventas/costos variables al ritmo diario, con costos fijos por el mayor entre lo registrado y el promedio de los tres meses completos anteriores. Los próximos tres usan ese promedio, incluyendo meses sin movimientos. Meta y avance futuros son estimaciones.
+
+## Gastos por usuario y empresa
+
+En Gastos → Por usuario y empresa se muestra el total pagado por Empresa y por cada usuario, con cantidad de registros, participación del total, gastos operativos y compras de material. Usa Desde/Hasta, Este mes o Todo. El resumen abarca todos los gastos vigentes del período, antes de paginación y sin los filtros de búsqueda/categoría del listado. Usuarios sin gastos aparecen en cero. Solo la tarjeta Empresa descuenta caja.

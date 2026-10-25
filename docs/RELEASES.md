@@ -54,3 +54,7 @@ El resumen separa Electricidad y Desgaste de impresora, usando los costos de ene
 ## Edición de gastos y proyecciones — 2026-10-14
 
 Botón Editar en filas y tarjetas de gastos, enlace directo al formulario y guardado con motivo e historial. Nueva vista Proyecciones y equilibrio con histórico de seis meses, proyección del mes actual, tres meses estimados, gráfica, meta y avance mensual. Reutiliza costos financieros existentes; no requiere migración.
+
+## Gastos por pagador — 2026-10-25
+
+Nueva pestaña Por usuario y empresa con totales por origen del dinero para todo el período, desglose operativo/material, porcentaje y número de registros. Incluye usuarios sin gastos, excluye anulados y usa navegación sin recarga completa al cambiar pestaña o fechas. No requiere migración ni modifica registros existentes.
