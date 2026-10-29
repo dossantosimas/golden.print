@@ -62,3 +62,7 @@ Nueva pestaña Por usuario y empresa con totales por origen del dinero para todo
 ## Gráfica de gastos por pagador — 2026-10-25
 
 La pestaña Por usuario y empresa incluye barras por pagador, separando gastos operativos y compras de material. La gráfica usa los mismos totales de las tarjetas y responde al período seleccionado. Mantiene cifras exactas en el desglose y en el tooltip.
+
+## Colores en comparación mensual — 2026-10-29
+
+Diferencia y variación usan verde para mejoras y rojo para deterioros. Aumentos en ventas/recaudo/utilidad/entradas/caja neta son favorables; aumentos en costos/operativos/pérdidas/salidas/cartera son desfavorables. Sin cambio o sin base porcentual permanece neutral. Aplica también a celular y conserva los valores calculados.

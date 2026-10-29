@@ -1,3 +1,12 @@
+## Colores de comparación — 2026-10-29
+
+- PASS: 38 pruebas unitarias; reglas favorables para ingresos/utilidad y reglas inversas para costos/salidas/cartera, neutralidad con cero o datos inválidos.
+- PASS: build/typecheck y ESLint de archivos afectados.
+- PASS: navegador verifica tono y color CSS real en diferencia y variación de cada indicador; porcentajes sin base neutrales. Capturas de escritorio/celular inspeccionadas, sin desbordamiento ni errores JavaScript.
+- Sin cambios de datos comerciales; sesión temporal eliminada.
+
+---
+
 ## Gráfica de gastos por pagador — 2026-10-25
 
 - PASS: build/typecheck y ESLint de los componentes afectados.
